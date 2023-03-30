@@ -17,9 +17,13 @@ public class Main {
 
         JsonObject json = new JsonObject(t.getBytes());
 
-        for(JsonBytes k : json.keySet()){
-            System.out.println(new String(k.getBytes())+" : ");//+"  "+json.get(k.toString()).toString());
-        }
+        //for(JsonBytes k : json.keySet()){
+        //    System.out.println(new String(k.getBytes())+" : ");//+"  "+json.get(k.toString()).toString());
+        //}
+
+        System.out.println(json.toString());
+
+        System.out.println(json.getJsonObject("result").getString("title"));
 
     }
 }

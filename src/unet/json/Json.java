@@ -111,29 +111,18 @@ public class Json {
     }
 
     private Map<JsonBytes, JsonVariable> decodeObject(){
+        trim();
+
         if(buf[pos] == '{'){
             HashMap<JsonBytes, JsonVariable> m = new HashMap<>();
             pos++;
 
             while(buf[pos] != '}'){
                 m.put(getBytes(), get());
-                break;
             }
             pos++;
             return m;
         }
-        /*
-        if(buf[pos] == 'd'){
-            HashMap<JsonBytes, JsonVariable> m = new HashMap<>();
-            pos++;
-
-            while(buf[pos] != 'e'){
-                m.put(getBytes(), get());
-            }
-            pos++;
-            return m;
-        }
-        */
         return null;
     }
 
@@ -175,7 +164,7 @@ public class Json {
                 return getList();
 
             default:
-                if(isNumber(buf[pos])){
+                if(isNumber()){
                     return getNumber();
                 }
         }
@@ -200,11 +189,11 @@ public class Json {
     }
 
     private JsonNumber getNumber(){
+        trim();
         pos++;
 
         int s = pos;
-        while(isNumber(buf[pos])){
-            System.out.println((char)(buf[pos]));
+        while(isNumber()){
             pos++;
         }
 
@@ -214,29 +203,14 @@ public class Json {
         pos++;
 
         return new JsonNumber(new String(b));
-        /*
-        char[] c = new char[32];
-        pos++;
-        int s = pos;
-        while(buf[pos] != 'e'){
-            c[pos-s] = (char) buf[pos];
-            pos++;
-        }
-
-        pos++;
-        return new JsonNumber(new String(c, 0, pos-s-1));
-        */
-        //return null;
     }
 
     private JsonBytes getBytes(){
-        //TRIM THEN FIND "
-        //TEMP TRIM
+        trim();
         pos++;
 
         int s = pos;
         while(buf[pos] != '"'){
-            System.out.println((char)(buf[pos]));
             pos++;
         }
 
@@ -257,21 +231,31 @@ public class Json {
     }
 
     private void trim(){
-        //SKIP \r + \n + \t + SPACE
+        while(isTrimmable()){
+            pos++;
+        }
+    }
+
+    private boolean isTrimmable(){
+        return (buf[pos] == 0x20 ||
+                buf[pos] == '\t' ||
+                buf[pos] == '\r' ||
+                buf[pos] == '\n' ||
+                buf[pos] == ',');
     }
 
     //IS THE DECIMAL POINT CONSIDERED A NUMBER...?
-    private boolean isNumber(byte c){
-        return (c == '0' ||
-                c == '1' ||
-                c == '2' ||
-                c == '3' ||
-                c == '4' ||
-                c == '5' ||
-                c == '6' ||
-                c == '7' ||
-                c == '8' ||
-                c == '9' ||
-                c == '.');
+    private boolean isNumber(){
+        return (buf[pos] == '0' ||
+                buf[pos] == '1' ||
+                buf[pos] == '2' ||
+                buf[pos] == '3' ||
+                buf[pos] == '4' ||
+                buf[pos] == '5' ||
+                buf[pos] == '6' ||
+                buf[pos] == '7' ||
+                buf[pos] == '8' ||
+                buf[pos] == '9' ||
+                buf[pos] == '.');
     }
 }
