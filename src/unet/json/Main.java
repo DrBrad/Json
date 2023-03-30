@@ -1,12 +1,6 @@
 package unet.json;
 
-import unet.json.variables.JsonBytes;
 import unet.json.variables.JsonObject;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class Main {
 
@@ -23,7 +17,7 @@ public class Main {
 
         System.out.println(json.toString());
 
-        System.out.println(json.getJsonObject("result").getString("title"));
+        //System.out.println(json.getJsonObject("result").getString("title"));
 
     }
 }

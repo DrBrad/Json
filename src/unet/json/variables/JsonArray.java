@@ -36,9 +36,6 @@ public class JsonArray implements JsonVariable, JsonObserver {
         }
     }
 
-
-
-
     public JsonArray(byte[] buf){
         this(new Json().decodeArray(buf, 0));
     }

@@ -92,21 +92,18 @@ public class Json {
     }
 
     private List<JsonVariable> decodeArray(){
+        trim();
+
         if(buf[pos] == '['){
-            ArrayList<JsonVariable> a = new ArrayList<>();
-        }
-        /*
-        if(buf[pos] == 'l'){
             ArrayList<JsonVariable> a = new ArrayList<>();
             pos++;
 
-            while(buf[pos] != 'e'){
+            while(buf[pos] != ']'){
                 a.add(get());
             }
             pos++;
             return a;
         }
-        */
         return null;
     }
 
