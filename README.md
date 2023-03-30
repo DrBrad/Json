@@ -38,39 +38,39 @@ Here are some examples of how to use the Json library.
 ```Java
 //FROM LIST
 ArrayList<String> l = new ArrayList<>();
-JsonArray bar = new JsonArray(l);
+JsonArray jar = new JsonArray(l);
 
 //FROM BYTES
 byte[] b; //ARRAY OF BYTES
-JsonArray bar = new JsonArray(b);
+JsonArray jar = new JsonArray(b);
 
 //CREATE JSON
-JsonArray bar = new JsonArray();
+JsonArray jar = new JsonArray();
 ```
 
 **Json Object | Map**
 ```Java
 //FROM MAP
 HashMap<String, String> l = new HashMap<>();
-JsonObject bob = new JsonObject(l);
+JsonObject job = new JsonObject(l);
 
 //FROM BYTES
 byte[] b; //ARRAY OF BYTES
-JsonObject bob = new JsonObject(b);
+JsonObject job = new JsonObject(b);
 
 //CREATE JSON
-JsonObject bob = new JsonObject();
+JsonObject job = new JsonObject();
 ```
 
 **Put | Get data**
 ```Java
 //ARRAY
-bar.put(1000);
-bar.get(0);
+jar.put(1000);
+jar.get(0);
 
 //MAP
-bob.put("KEY", 100);
-bob.get("KEY");
+job.put("KEY", 100);
+job.get("KEY");
 ```
 
 **Encoding to byte array**
