@@ -90,6 +90,10 @@ public class JsonArray implements JsonVariable, JsonObserver {
         set(i, new JsonNumber(n.toString()));
     }
 
+    public void set(int i, Boolean b){
+        set(i, new JsonBoolean(b));
+    }
+
     public void set(int i, byte[] b){
         set(i, new JsonBytes(b));
     }
@@ -146,6 +150,10 @@ public class JsonArray implements JsonVariable, JsonObserver {
         return ((Number) l.get(i).getObject()).floatValue();
     }
 
+    public Boolean getBoolean(int i){
+        return ((Boolean) l.get(i).getObject()).booleanValue();
+    }
+
     public String getString(int i){
         return new String((byte[]) l.get(i).getObject());
     }
@@ -164,6 +172,10 @@ public class JsonArray implements JsonVariable, JsonObserver {
 
     public boolean contains(Number n){
         return l.contains(new JsonNumber(n.toString()));
+    }
+
+    public boolean contains(Boolean b){
+        return l.contains(new JsonBoolean(b));
     }
 
     public boolean contains(String s){

@@ -30,6 +30,8 @@ public class JsonObject  implements JsonVariable, JsonObserver {
                 put(k, (JsonVariable) m.get(o));
             }else if(m.get(o) instanceof Number){
                 put(k, (Number) m.get(o));
+            }else if(m.get(o) instanceof Boolean){
+                put(k, (Boolean) m.get(o));
             }else if(m.get(o) instanceof String){
                 put(k, (String) m.get(o));
             }else if(m.get(o) instanceof byte[]){
@@ -59,6 +61,10 @@ public class JsonObject  implements JsonVariable, JsonObserver {
         put(k, new JsonNumber(n.toString()));
     }
 
+    private void put(JsonBytes k, Boolean b){
+        put(k, new JsonBoolean(b));
+    }
+
     private void put(JsonBytes k, byte[] b){
         put(k, new JsonBytes(b));
     }
@@ -77,6 +83,10 @@ public class JsonObject  implements JsonVariable, JsonObserver {
 
     public void put(String k, Number n){
         put(new JsonBytes(k.getBytes()), new JsonNumber(n.toString()));
+    }
+
+    public void put(String k, Boolean b){
+        put(new JsonBytes(k.getBytes()), new JsonBoolean(b));
     }
 
     public void put(String k, byte[] b){
@@ -133,6 +143,10 @@ public class JsonObject  implements JsonVariable, JsonObserver {
         return ((Number) m.get(new JsonBytes(k.getBytes())).getObject()).floatValue();
     }
 
+    public Boolean getBoolean(String k){
+        return ((Boolean) m.get(new JsonBytes(k.getBytes())).getObject()).booleanValue();
+    }
+
     public String getString(String k){
         return new String((byte[]) m.get(new JsonBytes(k.getBytes())).getObject());
     }
@@ -155,6 +169,10 @@ public class JsonObject  implements JsonVariable, JsonObserver {
 
     public boolean containsValue(Number n){
         return m.containsValue(new JsonNumber(n.toString()));
+    }
+
+    public boolean containsValue(Boolean b){
+        return m.containsValue(new JsonBoolean(b));
     }
 
     public boolean containsValue(String s){
@@ -248,6 +266,9 @@ public class JsonObject  implements JsonVariable, JsonObserver {
 
             if(m.get(o) instanceof JsonNumber){
                 b.append("\t\033[0;31m"+k+"\033[0m:\033[0;33m"+((JsonNumber) m.get(o)).getObject()+"\033[0m\r\n");
+
+            }else if(m.get(o) instanceof JsonBoolean){
+                b.append("\t\033[0;31m"+k+"\033[0m:\033[0;33m"+((JsonBoolean) m.get(o)).getObject()+"\033[0m\r\n");
 
             }else if(m.get(o) instanceof JsonBytes){
                 if(Charset.forName("US-ASCII").newEncoder().canEncode(new String(((JsonBytes) m.get(o)).getObject()))){

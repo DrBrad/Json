@@ -21,6 +21,7 @@ public class Main {
                 "    \"genre\": \"Adventure\",\n" +
                 "    \"year\": \"2020\",\n" +
                 "    \"coming\": 1680303600,\n" +
+                "    \"test\": True,\n" +
                 "    \"portrait\": \"8998d7d103b9549211de53e4928bd68c37baf270e64194cad9cf91882a245c3a\",\n" +
                 "    \"landscape\": \"eee16f9ae95441fce776aa3447a68d905cef3c956d088c26a76756d7dd2ff672\"\n" +
                 "  }\n" +
@@ -147,7 +148,7 @@ public class Main {
 
         System.out.println(json.toString());
 
-        //System.out.println(json.getJsonObject("result").getString("title"));
+        System.out.println(json.getJsonObject(2).getJsonObject("_id").getString("$oid"));
 
     }
 }

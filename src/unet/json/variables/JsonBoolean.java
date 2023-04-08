@@ -4,21 +4,21 @@ import java.util.Arrays;
 
 public class JsonBoolean implements JsonVariable {
 
-    private String n;
+    private boolean b;
     private int s;
 
-    public JsonBoolean(String n){
-        this.n = n;
-        s = n.getBytes().length+2;
+    public JsonBoolean(boolean b){
+        this.b = b;
+        s = (b) ? 4 : 5;
     }
 
     public byte[] getBytes(){
-        return ('i'+n+'e').getBytes();
+        return (b) ? "true".getBytes() : "false".getBytes();
     }
 
     @Override
     public Boolean getObject(){
-        return Boolean.parseBoolean(n);
+        return b;
     }
 
     @Override

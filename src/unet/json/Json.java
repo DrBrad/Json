@@ -97,6 +97,7 @@ public class Json {
         if(buf[pos] == '['){
             ArrayList<JsonVariable> a = new ArrayList<>();
             pos++;
+            //trim();
 
             while(buf[pos] != ']'){
                 trim();
@@ -114,13 +115,13 @@ public class Json {
         if(buf[pos] == '{'){
             HashMap<JsonBytes, JsonVariable> m = new HashMap<>();
             pos++;
+            trim();
 
             while(buf[pos] != '}'){
-                trim();
-                final JsonBytes k = getBytes();
-                trim();
-                m.put(k, get());
-                trim();
+                //final JsonBytes k = getBytes();
+                //trim();
+                m.put(getBytes(), get());
+                //trim();
                 //m.put(getBytes(), get());
             }
             pos++;
@@ -145,16 +146,16 @@ public class Json {
                 return getBytes();
 
             case 't':
-                //return getBoolean();
+                return getBoolean(true);
 
             case 'T':
-                //return getBoolean();
+                return getBoolean(true);
 
             case 'f':
-                //return getBoolean();
+                return getBoolean(false);
 
             case 'F':
-                //return getBoolean();
+                return getBoolean(false);
 
             case 'n':
                 //return getNull();
@@ -177,9 +178,17 @@ public class Json {
         return null;
     }
 
+    private JsonBoolean getBoolean(boolean bool){
+        trim();
+        pos += (bool) ? 5 : 6;
+        trim();
+
+        return new JsonBoolean(bool);
+    }
+
     private JsonNumber getNumber(){
         trim();
-        pos++;
+        //pos++;
 
         int s = pos;
         while(isNumber()){
@@ -190,6 +199,7 @@ public class Json {
         System.arraycopy(buf, s, b, 0, b.length);
 
         pos++;
+        trim();
 
         return new JsonNumber(new String(b));
     }
@@ -207,6 +217,7 @@ public class Json {
         System.arraycopy(buf, s, b, 0, b.length);
 
         pos++;
+        trim();
 
         return new JsonBytes(b);
     }
