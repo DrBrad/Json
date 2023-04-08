@@ -99,6 +99,7 @@ public class Json {
             pos++;
 
             while(buf[pos] != ']'){
+                trim();
                 a.add(get());
             }
             pos++;
@@ -115,7 +116,12 @@ public class Json {
             pos++;
 
             while(buf[pos] != '}'){
-                m.put(getBytes(), get());
+                trim();
+                final JsonBytes k = getBytes();
+                trim();
+                m.put(k, get());
+                trim();
+                //m.put(getBytes(), get());
             }
             pos++;
             return m;
@@ -130,7 +136,9 @@ public class Json {
         //IF CASE { = MAP
         //IF CASE [ = LIST
         //IF CASE n = NULL
-        pos++;
+        //trim();
+
+        //System.out.println((char)(buf[pos]));
 
         switch(buf[pos]){
             case '"':
@@ -166,22 +174,6 @@ public class Json {
                 }
         }
 
-
-
-        /*
-        switch(buf[pos]){
-            case 'i':
-                return getNumber();
-            case 'l':
-                return getList();
-            case 'd':
-                return getMap();
-            default:
-                if(buf[pos] >= '0' && buf[pos] <= '9'){
-                    return getBytes();
-                }
-        }
-        */
         return null;
     }
 
@@ -238,6 +230,7 @@ public class Json {
                 buf[pos] == '\t' ||
                 buf[pos] == '\r' ||
                 buf[pos] == '\n' ||
+                buf[pos] == ':' ||
                 buf[pos] == ',');
     }
 

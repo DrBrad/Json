@@ -14,7 +14,6 @@ public class JsonObject  implements JsonVariable, JsonObserver {
 
     public JsonObject(){
     }
-
     public JsonObject(Map<?, ?> m){
         for(Object o : m.keySet()){
             JsonBytes k;
