@@ -202,16 +202,18 @@ public class Main {
         //System.out.println(json.getJsonObject(2).getJsonObject("_id").getString("$oid"));
 
 
-        System.out.println(new String(sanitize("After a\" construction\" project\" begins in t\"heir neighborhood,\"".getBytes())));
+        //System.out.println(new String(sanitize("ds Tuck (Brian \"Astro\" Bradley), Alex (Teo Hal".getBytes())));
 
     }
 
     public static byte[] sanitize(byte[] b){
         List<Integer> l = new ArrayList<>();
+        int p = 0;
         for(int i = 0; i < b.length-1; i++){
             if(b[i] != '\\' && b[i+1] == '"'){
-                l.add(i);
-                System.out.println("SANITIZE");
+                i++;
+                l.add(i-p);
+                p = i+1;
             }
         }
 
@@ -220,11 +222,16 @@ public class Main {
         }
 
         byte[] r = new byte[b.length+l.size()];
-        int p = 0;
+        p = 0;
+        int x = 0;
         for(int i : l){
-            System.arraycopy(b, p, r, 1, i-p);
-            p = i;
+            System.arraycopy(b, p, r, p+x, i);
+            p += i+1;
+            r[p+x-1] = '\\';
+            r[p+x] = '"';
+            x++;
         }
+        System.arraycopy(b, p, r, p+x, b.length-p);
 
         return r;
     }

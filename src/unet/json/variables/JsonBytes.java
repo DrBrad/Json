@@ -1,6 +1,8 @@
 package unet.json.variables;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class JsonBytes implements JsonVariable {
 
@@ -8,16 +10,38 @@ public class JsonBytes implements JsonVariable {
     private int s;
 
     public JsonBytes(byte[] b){
-        this.b = b;
-        s = b.length+2;
+        this.b = sanitize(b);
+        s = this.b.length+2;
     }
 
-    private void sanitize(){
+    private byte[] sanitize(byte[] b){
+        List<Integer> l = new ArrayList<>();
+        int p = 0;
         for(int i = 0; i < b.length-1; i++){
             if(b[i] != '\\' && b[i+1] == '"'){
-
+                i++;
+                l.add(i-p);
+                p = i+1;
             }
         }
+
+        if(l.isEmpty()){
+            return b;
+        }
+
+        byte[] r = new byte[b.length+l.size()];
+        p = 0;
+        int x = 0;
+        for(int i : l){
+            System.arraycopy(b, p, r, p+x, i);
+            p += i+1;
+            r[p+x-1] = '\\';
+            r[p+x] = '"';
+            x++;
+        }
+        System.arraycopy(b, p, r, p+x, b.length-p);
+
+        return r;
     }
 
     public byte[] getBytes(){
