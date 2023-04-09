@@ -2,6 +2,8 @@ package unet.json;
 
 import unet.json.variables.*;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +45,87 @@ public class Json {
         return null;
     }
 */
+
+
+
+    public static Object fromJson(Class c, JsonObject j)throws ReflectiveOperationException {
+        Constructor<?> constructor = c.getDeclaredConstructor();
+        Object i = constructor.newInstance();
+
+        for(Method method : i.getClass().getDeclaredMethods()){
+            if(method.isAnnotationPresent(JsonAnnotation.class)){
+                if(method.getReturnType() == void.class){
+                    final String k = method.getAnnotation(JsonAnnotation.class).key();
+
+                    if(j.containsKey(k)){
+                        //if(j.get(k) == method.getReturnType()){
+
+                        if(String.class.isAssignableFrom(method.getParameterTypes()[0])){
+                            method.invoke(i, j.getString(k));
+
+                        }else if(method.getParameterTypes()[0] == int.class){
+                        //}else if(Integer.class.isAssignableFrom(method.getParameterTypes()[0])){
+                            method.invoke(i, j.getInteger(k));
+
+                        }else if(method.getParameterTypes()[0] == long.class){
+                        //}else if(Long.class.isAssignableFrom(method.getParameterTypes()[0])){
+                            method.invoke(i, j.getLong(k));
+
+                        }else if(method.getParameterTypes()[0] == double.class){
+                        //}else if(Double.class.isAssignableFrom(method.getParameterTypes()[0])){
+                            method.invoke(i, j.getDouble(k));
+
+                        }else if(method.getParameterTypes()[0] == byte.class){
+                        //}else if(Byte.class.isAssignableFrom(method.getParameterTypes()[0])){
+                            method.invoke(i, j.getBytes(k));
+
+                        }else if(method.getParameterTypes()[0] == boolean.class){
+                        //}else if(Boolean.class.isAssignableFrom(method.getParameterTypes()[0])){
+                            method.invoke(i, j.getBoolean(k));
+
+                        }else if(List.class.isAssignableFrom(method.getParameterTypes()[0])){
+                            method.invoke(i, j.getJsonArray(k));
+
+                        }else if(Map.class.isAssignableFrom(method.getParameterTypes()[0])){
+                            method.invoke(i, j.getJsonObject(k));
+
+                        }
+
+
+                        /*
+                        if(method.getParameterTypes()[0] == String.class){
+                            method.invoke(i, j.getString(k));
+
+                        }else if(method.getParameterTypes()[0] == Number.class){
+                            method.invoke(i, j.getString(k));
+                        }*/
+                        //}
+                    }
+                }
+            }
+        }
+
+        return i;
+    }
+
+    public static JsonObject toJson(Object o){
+        JsonObject j = new JsonObject();
+        for(Method method : o.getClass().getDeclaredMethods()){
+            if(method.isAnnotationPresent(JsonAnnotation.class)){
+                try{
+                    if(method.getReturnType() != void.class){
+                        System.out.println(method.getReturnType()+"  - "+method.getAnnotation(JsonAnnotation.class).key()+" = "+method.invoke(o));
+                        j.put(method.getAnnotation(JsonAnnotation.class).key(), method.invoke(o));
+                    }
+                }catch(ReflectiveOperationException e){
+                    e.printStackTrace();
+                }
+            }
+        }
+        return j;
+    }
+
+
     public List<JsonVariable> decodeArray(byte[] buf, int off){
         this.buf = buf;
         pos = off;
@@ -70,7 +153,6 @@ public class Json {
             put((JsonObject) v);
         }
     }
-
 
     //THIS SEEMS REDUNDANT....
     private void put(JsonBytes v){

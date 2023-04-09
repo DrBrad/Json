@@ -65,6 +65,7 @@ public class JsonObject  implements JsonVariable, JsonObserver {
     }
 
     public void put(String k, boolean b){
+        System.out.println("PUT "+k);
         put(new JsonBytes(k.getBytes()), new JsonBoolean(b));
     }
 

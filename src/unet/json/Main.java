@@ -1,10 +1,13 @@
 package unet.json;
 
+import unet.json.variables.JsonAnnotation;
 import unet.json.variables.JsonArray;
 import unet.json.variables.JsonObject;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Main {
 
@@ -13,8 +16,10 @@ public class Main {
     //SERIALIZE JSON - PRETTY AND NOT
     //Annotation system
     //REMOVE OBSERVER IF SET OR PUT
+    //FINISH SANITIZATION...
 
-    public static void main(String[] args){
+
+    public static void main(String[] args)throws Exception {
 
         //String t = "{\"type\":0,\"test\":null,\"result\":{\"_id\":{\"$oid\":\"63e4624f17f6714b6207e5df\"},\"title\":\"Tommy Boy\",\"description\":\"After his beloved father (Brian Dennehy) dies, dimwitted Tommy Callahan (Chris Farley) inherits a near-bankrupt automobile parts factory in Sandusky, Ohio. His brand new stepmother, Beverly (Bo Derek), wants to cash out and close, but Tommy's sentimental attachment to his father's employees spurs him to make one last-ditch effort to find someone who will buy their products. With his father's tightly wound assistant, Richard (David Spade), in tow, Tommy hits the road to scare up some new clients.\",\"rating\":\"PG-13\",\"year\":\"1995\",\"genre\":\"Adventure\",\"portrait\":\"8998d7d103b9549211de53e4928bd68c37baf270e64194cad9cf91882a245c3a\",\"landscape\":\"eee16f9ae95441fce776aa3447a68d905cef3c956d088c26a76756d7dd2ff672\",\"video\":\"c35692e499ea0e3f3df291e125d9c63b3b78dd51a1b272de7eb52e783a20f8c1\",\"type\":\"movie\",\"extra\":\"1h 37m\"}}";
 /*
@@ -165,10 +170,74 @@ public class Main {
 */
 
 
-        JsonArray json = new JsonArray();
-        JsonObject o = new JsonObject();
+        //JsonArray json = new JsonArray();
+        JsonObject json = new JsonObject();
         JsonObject k = new JsonObject();
         k.put("$oid", "63e4624e17f6714b6207e3f0");
+        json.put("id", k);
+        k.put("test", "asd");
+        json.put("title", "Earth to Echo");
+        json.put("description", "After a construction project begins in their neighborhood, best friends Tuck (Brian \"Astro\" Bradley), Alex (Teo Halm) and Munch (Reese C. Hartwig) begin receiving strange, encoded messages on their cell phones. They immediately inform their parents and the authorities, but when no one takes them seriously, the youths decide to crack the code themselves and trace the messages to their source. The youths' curiosity leads them to a robotic extraterrestrial who desperately needs their help.");
+        json.put("rating", "PG");
+        json.put("time", "1h 40m");
+        json.put("genre", "Adventure");
+        json.put("year", "2019");
+        json.put("coming", 1680303600);
+        json.put("portrait", "2a3bbd82940dad5e4d950c156e0aef090297d638225243ca7295dee6b53290d2");
+        json.put("landscape", "9ea45ba00f32dce67e70ed712cac466158c0ce1c3c51a70f828c1eebb4de0230");
+        json.put("boolTest", true);
+        //json.put("nullTest", null);
+        //json.add(o);
+
+        /*
+        JsonArray json = new JsonArray();
+        json.add(100);
+        json.add(200);
+        json.add(300.0);
+        json.add("hello");
+        json.add(false);
+        json.add(new JsonObject());
+
+        json.getJsonObject(5).put("Test", 0);*/
+
+        //System.out.println(json.toString());
+
+        //System.out.println(new String(json.encode()));
+
+        Y y = (Y) Json.fromJson(Y.class, json);
+
+        //System.out.println(y.getBoolTest());
+
+        json = Json.toJson(y);
+
+        System.out.println(json);
+
+        //System.out.println(json.getJsonObject(2).getJsonObject("_id").getString("$oid"));
+
+
+        //System.out.println(new String(sanitize("ds Tuck (Brian \"Astro\" Bradley), Alex (Teo Hal".getBytes())));
+
+        //Class<Y> yClass = Y.class;
+
+        // Get all the declared methods of the class
+        //Method[] methods = yClass.getDeclaredMethods();
+
+        /*
+        Map<String, String> a = new HashMap<>();
+        a.put("portrait", "TEST");
+
+        Y y = (Y) testSet(Y.class, a);
+
+        System.out.println(y.getPortrait());
+
+        //Y y = new Y();
+        testGet(y);
+        */
+    }
+
+
+    /*
+            k.put("$oid", "63e4624e17f6714b6207e3f0");
         o.put("id", k);
         k.put("test", "asd");
         o.put("title", "Earth to Echo");
@@ -182,26 +251,113 @@ public class Main {
         o.put("landscape", "9ea45ba00f32dce67e70ed712cac466158c0ce1c3c51a70f828c1eebb4de0230");
         o.put("boolTest", false);
         o.put("nullTest", null);
-        json.add(o);
+    */
+    public static class Y {
 
-        /*
-        JsonArray json = new JsonArray();
-        json.add(100);
-        json.add(200);
-        json.add(300.0);
-        json.add("hello");
-        json.add(false);
-        json.add(new JsonObject());
+        private String title, description, rating, time, genre, year, portrait, landscape;
+        private long coming;
+        private boolean bool;
 
-        json.getJsonObject(5).put("Test", 0);*/
+        @JsonAnnotation(key = "title")
+        public String getTitle(){
+            return title;
+        }
 
-        System.out.println(json.toString());
+        @JsonAnnotation(key = "title")
+        public void setTitle(String title){
+            this.title = title;
+        }
 
-        System.out.println(new String(json.encode()));
+        @JsonAnnotation(key = "description")
+        public String getDescription(){
+            return description;
+        }
 
-        //System.out.println(json.getJsonObject(2).getJsonObject("_id").getString("$oid"));
+        @JsonAnnotation(key = "description")
+        public void setDescription(String description){
+            this.description = description;
+        }
+
+        @JsonAnnotation(key = "rating")
+        public String getRating(){
+            return rating;
+        }
+
+        @JsonAnnotation(key = "rating")
+        public void setRating(String rating){
+            this.rating = rating;
+        }
+
+        @JsonAnnotation(key = "time")
+        public String getTime(){
+            return time;
+        }
+
+        @JsonAnnotation(key = "time")
+        public void setTime(String time){
+            this.time = time;
+        }
+
+        @JsonAnnotation(key = "genre")
+        public String getGenre(){
+            return genre;
+        }
+
+        @JsonAnnotation(key = "genre")
+        public void setGenre(String genre){
+            this.genre = genre;
+        }
+
+        @JsonAnnotation(key = "year")
+        public String getYear(){
+            return year;
+        }
+
+        @JsonAnnotation(key = "year")
+        public void setYear(String year){
+            this.year = year;
+        }
+
+        @JsonAnnotation(key = "portrait")
+        public String getPortrait(){
+            return portrait;
+        }
+
+        @JsonAnnotation(key = "portrait")
+        public void setPortrait(String portrait){
+            this.portrait = portrait;
+        }
+
+        @JsonAnnotation(key = "landscape")
+        public String getLandscape(){
+            return landscape;
+        }
+
+        @JsonAnnotation(key = "landscape")
+        public void setLandscape(String landscape){
+            this.landscape = landscape;
+        }
+
+        @JsonAnnotation(key = "coming")
+        public long getComing(){
+            return coming;
+        }
+
+        @JsonAnnotation(key = "coming")
+        public void setComing(long coming){
+            this.coming = coming;
+        }
 
 
-        //System.out.println(new String(sanitize("ds Tuck (Brian \"Astro\" Bradley), Alex (Teo Hal".getBytes())));
+
+        @JsonAnnotation(key = "boolTest")
+        public boolean getBoolTest(){
+            return bool;
+        }
+
+        @JsonAnnotation(key = "boolTest")
+        public void setBoolTest(boolean bool){
+            this.bool = bool;
+        }
     }
 }
