@@ -9,14 +9,22 @@ public class JsonBytes implements JsonVariable {
 
     public JsonBytes(byte[] b){
         this.b = b;
-        s = (b.length+":").getBytes().length+b.length;
+        s = b.length+2;
+    }
+
+    private void sanitize(){
+        for(int i = 0; i < b.length-1; i++){
+            if(b[i] != '\\' && b[i+1] == '"'){
+
+            }
+        }
     }
 
     public byte[] getBytes(){
         byte[] r = new byte[s];
-        byte[] l = (b.length+":").getBytes();
-        System.arraycopy(l, 0, r, 0, l.length);
-        System.arraycopy(b, 0, r, l.length, b.length);
+        r[0] = '"';
+        System.arraycopy(b, 0, r, 1, b.length);
+        r[r.length-1] = '"';
         return r;
     }
 

@@ -14,6 +14,7 @@ public class JsonObject  implements JsonVariable, JsonObserver {
 
     public JsonObject(){
     }
+
     public JsonObject(Map<?, ?> m){
         for(Object o : m.keySet()){
             JsonBytes k;
@@ -29,17 +30,17 @@ public class JsonObject  implements JsonVariable, JsonObserver {
             if(m.get(o) instanceof JsonVariable){
                 put(k, (JsonVariable) m.get(o));
             }else if(m.get(o) instanceof Number){
-                put(k, (Number) m.get(o));
+                put(k, new JsonNumber((m.get(o)).toString()));
             }else if(m.get(o) instanceof Boolean){
-                put(k, (Boolean) m.get(o));
+                put(k, new JsonBoolean((Boolean) m.get(o)));
             }else if(m.get(o) instanceof String){
-                put(k, (String) m.get(o));
+                put(k, new JsonBytes(((String) m.get(o)).getBytes()));
             }else if(m.get(o) instanceof byte[]){
-                put(k, (byte[]) m.get(o));
+                put(k, new JsonBytes((byte[]) o));
             }else if(m.get(o) instanceof List<?>){
-                put(k, (List<?>) m.get(o));
+                put(k, new JsonArray((List<?>) o));
             }else if(m.get(o) instanceof Map<?, ?>){
-                put(k, (Map<?, ?>) m.get(o));
+                put(k, new JsonObject((Map<?, ?>) o));
             }
         }
     }
@@ -54,57 +55,32 @@ public class JsonObject  implements JsonVariable, JsonObserver {
 
     private void put(JsonBytes k, JsonVariable v){
         m.put(k, v);
-        setByteSize(k.byteSize()+v.byteSize());
+        setByteSize(k.byteSize()+v.byteSize()+2);
+
+        if(v instanceof JsonObject){
+            ((JsonObject) v).setObserver(this);
+        }else if(v instanceof JsonArray){
+            ((JsonArray) v).setObserver(this);
+        }
     }
 
-    private void put(JsonBytes k, Number n){
-        put(k, new JsonNumber(n.toString()));
-    }
-
-    private void put(JsonBytes k, Boolean b){
-        put(k, new JsonBoolean(b));
-    }
-
-    private void put(JsonBytes k, byte[] b){
-        put(k, new JsonBytes(b));
-    }
-
-    private void put(JsonBytes k, String s){
-        put(k, new JsonBytes(s.getBytes()));
-    }
-
-    private void put(JsonBytes k, List<?> l){
-        put(k, new JsonArray(l));
-    }
-
-    private void put(JsonBytes k, Map<?, ?> l){
-        put(k, new JsonObject(l));
-    }
-
-    public void put(String k, Number n){
-        put(new JsonBytes(k.getBytes()), new JsonNumber(n.toString()));
-    }
-
-    public void put(String k, Boolean b){
+    public void put(String k, boolean b){
         put(new JsonBytes(k.getBytes()), new JsonBoolean(b));
     }
 
-    public void put(String k, byte[] b){
-        put(new JsonBytes(k.getBytes()), new JsonBytes(b));
+    public void put(String k, int i){
+        put(new JsonBytes(k.getBytes()), new JsonNumber(Integer.toString(i)));
     }
 
-    public void put(String k, String s){
-        put(new JsonBytes(k.getBytes()), new JsonBytes(s.getBytes()));
+    public void put(String k, long l){
+        put(new JsonBytes(k.getBytes()), new JsonNumber(Long.toString(l)));
     }
 
-    public void put(String k, List<?> l){
-        put(new JsonBytes(k.getBytes()), new JsonArray(l));
+    public void put(String k, double d){
+        put(new JsonBytes(k.getBytes()), new JsonNumber(Double.toString(d)));
     }
 
-    public void put(String k, Map<?, ?> l){
-        put(new JsonBytes(k.getBytes()), new JsonObject(l));
-    }
-
+    /*
     public void put(String k, JsonArray a){
         put(new JsonBytes(k.getBytes()), a);
         a.setObserver(this);
@@ -113,6 +89,28 @@ public class JsonObject  implements JsonVariable, JsonObserver {
     public void put(String k, JsonObject o){
         put(new JsonBytes(k.getBytes()), o);
         o.setObserver(this);
+    }
+    */
+
+    public void put(String k, Object o){
+        if(o == null){
+            put(new JsonBytes(k.getBytes()), new JsonNull());
+
+        }else if(o instanceof String){
+            put(new JsonBytes(k.getBytes()), new JsonBytes(((String) o).getBytes()));
+
+        }else if(o instanceof byte[]){
+            put(new JsonBytes(k.getBytes()), new JsonBytes((byte[]) o));
+
+        }else if(o instanceof List<?>){
+            put(new JsonBytes(k.getBytes()), new JsonArray((List<?>) o));
+
+        }else if(o instanceof Map<?, ?>){
+            put(new JsonBytes(k.getBytes()), new JsonObject((Map<?, ?>) o));
+
+        }else if(o instanceof JsonVariable){
+            put(new JsonBytes(k.getBytes()), (JsonVariable) o);
+        }
     }
 
     public JsonVariable valueOf(JsonBytes k){
@@ -249,7 +247,7 @@ public class JsonObject  implements JsonVariable, JsonObserver {
 
     @Override
     public int byteSize(){
-        return s;
+        return s-((m.isEmpty()) ? 0 : 1);
     }
 
     @Override

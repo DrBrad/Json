@@ -60,6 +60,10 @@ public class Json {
             put((JsonBytes) v);
         }else if(v instanceof JsonNumber){
             put((JsonNumber) v);
+        }else if(v instanceof JsonBoolean){
+            put((JsonBoolean) v);
+        }else if(v instanceof JsonNull){
+            put((JsonNull) v);
         }else if(v instanceof JsonArray){
             put((JsonArray) v);
         }else if(v instanceof JsonObject){
@@ -67,6 +71,8 @@ public class Json {
         }
     }
 
+
+    //THIS SEEMS REDUNDANT....
     private void put(JsonBytes v){
         byte[] b = v.getBytes();
         System.arraycopy(b, 0, buf, pos, b.length);
@@ -79,31 +85,44 @@ public class Json {
         pos += b.length;
     }
 
+    private void put(JsonBoolean n){
+        byte[] b = n.getBytes();
+        System.arraycopy(b, 0, buf, pos, b.length);
+        pos += b.length;
+    }
+
+    private void put(JsonNull n){
+        byte[] b = n.getBytes();
+        System.arraycopy(b, 0, buf, pos, b.length);
+        pos += b.length;
+    }
+    //THIS SEEMS REDUNDANT
+
     private void put(JsonArray l){
-        /*
-        buf[pos] = 'l';
+        buf[pos] = '[';
         pos++;
 
         for(int i = 0; i < l.size(); i++){
             put(l.valueOf(i));
+            buf[pos] = ',';
+            pos++;
         }
-        buf[pos] = 'e';
-        pos++;
-        */
+        buf[pos-1] = ']';
     }
 
     private void put(JsonObject m){
-        /*
-        buf[pos] = 'd';
+        buf[pos] = '{';
         pos++;
 
         for(JsonBytes k : m.keySet()){
             put(k);
+            buf[pos] = ':';
+            pos++;
             put(m.valueOf(k));
+            buf[pos] = ',';
+            pos++;
         }
-        buf[pos] = 'e';
-        pos++;
-        */
+        buf[pos-1] = '}';
     }
 
     private List<JsonVariable> decodeArray(){

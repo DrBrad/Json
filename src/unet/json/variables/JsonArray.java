@@ -23,15 +23,15 @@ public class JsonArray implements JsonVariable, JsonObserver {
             if(v instanceof JsonVariable){
                 add((JsonVariable) v);
             }else if(v instanceof Number){
-                add((Number) v);
+                add(new JsonNumber(v.toString()));
             }else if(v instanceof String){
-                add((String) v);
+                add(new JsonBytes(((String) v).getBytes()));
             }else if(v instanceof byte[]){
-                add((byte[]) v);
+                add(new JsonBytes((byte[]) v));
             }else if(v instanceof List<?>){
-                add((List<?>) v);
+                add(new JsonArray((List<?>) v));
             }else if(v instanceof Map<?, ?>){
-                add((Map<?, ?>) v);
+                add(new JsonObject((Map<?, ?>) v));
             }
         }
     }
@@ -46,70 +46,94 @@ public class JsonArray implements JsonVariable, JsonObserver {
 
     private void add(JsonVariable v){
         l.add(v);
-        setByteSize(v.byteSize());
+        setByteSize(v.byteSize()+1);
+
+        if(v instanceof JsonObject){
+            ((JsonObject) v).setObserver(this);
+        }else if(v instanceof JsonArray){
+            ((JsonArray) v).setObserver(this);
+        }
     }
 
-    public void add(Number n){
-        add(new JsonNumber(n.toString()));
+    public void add(boolean b){
+        add(new JsonBoolean(b));
     }
 
-    public void add(byte[] b){
-        add(new JsonBytes(b));
+    public void add(int i){
+        add(new JsonNumber(Integer.toString(i)));
     }
 
-    public void add(String s){
-        add(new JsonBytes(s.getBytes()));
+    public void add(long l){
+        add(new JsonNumber(Long.toString(l)));
     }
 
-    public void add(List<?> l){
-        add(new JsonArray(l));
+    public void add(double d){
+        add(new JsonNumber(Double.toString(d)));
     }
 
-    public void add(Map<?, ?> l){
-        add(new JsonObject(l));
-    }
-
+    /*
     public void add(JsonArray a){
         l.add(a);
-        setByteSize(a.byteSize());
+        setByteSize(a.byteSize()+1);
         a.setObserver(this);
     }
 
     public void add(JsonObject o){
         l.add(o);
-        setByteSize(o.byteSize());
+        setByteSize(o.byteSize()+1);
         o.setObserver(this);
+    }
+    */
+
+    public void add(Object o){
+        if(o == null){
+            add(new JsonNull());
+
+        }else if(o instanceof String){
+            add(new JsonBytes(((String) o).getBytes()));
+
+        }else if(o instanceof byte[]){
+            add(new JsonBytes((byte[]) o));
+
+        }else if(o instanceof List<?>){
+            add(new JsonArray((List<?>) o));
+
+        }else if(o instanceof Map<?, ?>){
+            add(new JsonObject((Map<?, ?>) o));
+
+        }else if(o instanceof JsonVariable){
+            add((JsonVariable) o);
+        }
     }
 
     private void set(int i, JsonVariable v){
         l.set(i, v);
         setByteSize(-l.get(i).byteSize()+v.byteSize());
+
+        if(v instanceof JsonObject){
+            ((JsonObject) v).setObserver(this);
+        }else if(v instanceof JsonArray){
+            ((JsonArray) v).setObserver(this);
+        }
     }
 
-    public void set(int i, Number n){
-        set(i, new JsonNumber(n.toString()));
-    }
-
-    public void set(int i, Boolean b){
+    public void set(int i, boolean b){
         set(i, new JsonBoolean(b));
     }
 
-    public void set(int i, byte[] b){
-        set(i, new JsonBytes(b));
+    public void set(int i, int j){
+        set(i, new JsonNumber(Integer.toString(j)));
     }
 
-    public void set(int i, String s){
-        set(i, new JsonBytes(s.getBytes()));
+    public void set(int i, long l){
+        set(i, new JsonNumber(Long.toString(l)));
     }
 
-    public void set(int i, List<?> l){
-        set(i, new JsonArray(l));
+    public void set(int i, double d){
+        set(i, new JsonNumber(Double.toString(d)));
     }
 
-    public void set(int i, Map<?, ?> m){
-        set(i, new JsonObject(m));
-    }
-
+    /*
     public void set(int i, JsonArray a){
         l.set(i, a);
         setByteSize(-l.get(i).byteSize()+a.byteSize());
@@ -120,6 +144,28 @@ public class JsonArray implements JsonVariable, JsonObserver {
         l.set(i, o);
         setByteSize(-l.get(i).byteSize()+o.byteSize());
         o.setObserver(this);
+    }
+    */
+
+    public void set(int i, Object o){
+        if(o == null){
+            set(i, new JsonNull());
+
+        }else if(o instanceof String){
+            set(i, new JsonBytes(((String) o).getBytes()));
+
+        }else if(o instanceof byte[]){
+            set(i, new JsonBytes((byte[]) o));
+
+        }else if(o instanceof List<?>){
+            set(i, new JsonArray((List<?>) o));
+
+        }else if(o instanceof Map<?, ?>){
+            set(i, new JsonObject((Map<?, ?>) o));
+
+        }else if(o instanceof JsonVariable){
+            set(i, (JsonVariable) o);
+        }
     }
 
     public JsonVariable valueOf(int i){
@@ -162,7 +208,7 @@ public class JsonArray implements JsonVariable, JsonObserver {
         return (byte[]) l.get(i).getObject();
     }
 
-    public JsonArray getBencodeArray(int i){
+    public JsonArray getJsonArray(int i){
         return (JsonArray) l.get(i);
     }
 
@@ -279,7 +325,7 @@ public class JsonArray implements JsonVariable, JsonObserver {
 
     @Override
     public int byteSize(){
-        return s;
+        return s-((l.isEmpty()) ? 0 : 1);
     }
 
     @Override

@@ -11,11 +11,11 @@ public class JsonNumber implements JsonVariable {
 
     public JsonNumber(String n){
         this.n = n;
-        s = n.getBytes().length+2;
+        s = n.getBytes().length;
     }
 
     public byte[] getBytes(){
-        return ('i'+n+'e').getBytes();
+        return n.getBytes();
     }
 
     @Override
