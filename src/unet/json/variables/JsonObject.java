@@ -268,7 +268,10 @@ public class JsonObject  implements JsonVariable, JsonObserver {
                 b.append("\t\033[0;31m"+k+"\033[0m:\033[0;33m"+((JsonNumber) m.get(o)).getObject()+"\033[0m\r\n");
 
             }else if(m.get(o) instanceof JsonBoolean){
-                b.append("\t\033[0;31m"+k+"\033[0m:\033[0;33m"+((JsonBoolean) m.get(o)).getObject()+"\033[0m\r\n");
+                b.append("\t\033[0;31m"+k+"\033[0m:\033[0;35m"+((JsonBoolean) m.get(o)).getObject()+"\033[0m\r\n");
+
+            }else if(m.get(o) instanceof JsonNull){
+                b.append("\t\033[0;31m"+k+"\033[0m:\033[0;36m"+m.get(o).getObject()+"\033[0m\r\n");
 
             }else if(m.get(o) instanceof JsonBytes){
                 if(Charset.forName("US-ASCII").newEncoder().canEncode(new String(((JsonBytes) m.get(o)).getObject()))){

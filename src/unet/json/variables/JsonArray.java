@@ -295,6 +295,12 @@ public class JsonArray implements JsonVariable, JsonObserver {
             if(v instanceof JsonNumber){
                 b.append("\t\033[0;31m"+v.getObject()+"\033[0m\r\n");
 
+            }else if(v instanceof JsonBoolean){
+                b.append("\t\033[0;35m"+v.getObject()+"\033[0m\r\n");
+
+            }else if(v instanceof JsonNull){
+                b.append("\t\033[0;36m"+v.getObject()+"\033[0m\r\n");
+
             }else if(v instanceof JsonBytes){
                 if(Charset.forName("US-ASCII").newEncoder().canEncode(new String((byte[]) v.getObject()))){
                     b.append("\t\033[0;34m"+new String((byte[]) v.getObject(), StandardCharsets.UTF_8)+"\033[0m\r\n");
@@ -304,10 +310,10 @@ public class JsonArray implements JsonVariable, JsonObserver {
                 }
 
             }else if(v instanceof JsonArray){
-                b.append("\t\033[0m"+((JsonArray) v).toString().replaceAll("\\r?\\n", "\r\n\t")+"\r\n");
+                b.append("\t\033[0m"+v.toString().replaceAll("\\r?\\n", "\r\n\t")+"\r\n");
 
             }else if(v instanceof JsonObject){
-                b.append("\t\033[0m"+((JsonObject) v).toString().replaceAll("\\r?\\n", "\r\n\t")+"\r\n");
+                b.append("\t\033[0m"+v.toString().replaceAll("\\r?\\n", "\r\n\t")+"\r\n");
             }
         }
 

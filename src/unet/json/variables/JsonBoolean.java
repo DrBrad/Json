@@ -13,7 +13,18 @@ public class JsonBoolean implements JsonVariable {
     }
 
     public byte[] getBytes(){
-        return (b) ? "true".getBytes() : "false".getBytes();
+        return (b) ? new byte[]{
+                't',
+                'r',
+                'u',
+                'e'
+        } : new byte[]{
+                'f',
+                'a',
+                'l',
+                's',
+                'e'
+        };
     }
 
     @Override

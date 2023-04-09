@@ -27,7 +27,22 @@ public class Json {
         put(m);
         return buf;
     }
+/*
+    public JsonVariable decode(byte[] buf, int off){
+        this.buf = buf;
+        pos = off;
 
+        switch(buf[pos]){
+            case '{':
+                return getMap();
+
+            case '[':
+                return getList();
+        }
+
+        return null;
+    }
+*/
     public List<JsonVariable> decodeArray(byte[] buf, int off){
         this.buf = buf;
         pos = off;
@@ -115,11 +130,11 @@ public class Json {
         if(buf[pos] == '{'){
             HashMap<JsonBytes, JsonVariable> m = new HashMap<>();
             pos++;
-            trim();
+            //trim();
 
             while(buf[pos] != '}'){
                 //final JsonBytes k = getBytes();
-                //trim();
+                trim();
                 m.put(getBytes(), get());
                 //trim();
                 //m.put(getBytes(), get());
@@ -158,10 +173,10 @@ public class Json {
                 return getBoolean(false);
 
             case 'n':
-                //return getNull();
+                return getNull();
 
             case 'N':
-                //return getNull();
+                return getNull();
 
             case '{':
                 return getMap();
@@ -178,8 +193,15 @@ public class Json {
         return null;
     }
 
-    private JsonBoolean getBoolean(boolean bool){
+    private JsonNull getNull(){
+        //trim();
+        pos += 5;
         trim();
+        return new JsonNull();
+    }
+
+    private JsonBoolean getBoolean(boolean bool){
+        //trim();
         pos += (bool) ? 5 : 6;
         trim();
 
@@ -187,7 +209,7 @@ public class Json {
     }
 
     private JsonNumber getNumber(){
-        trim();
+        //trim();
         //pos++;
 
         int s = pos;
@@ -205,7 +227,7 @@ public class Json {
     }
 
     private JsonBytes getBytes(){
-        trim();
+        //trim();
         pos++;
 
         int s = pos;
