@@ -193,9 +193,9 @@ public class Main {
         json.add(false);
         json.add(new JsonObject());
 
-        json.getJsonObject(5).put("Test", 0);
+        json.getJsonObject(5).put("Test", 0);*/
 
-        System.out.println(json.toString());*/
+        System.out.println(json.toString());
 
         System.out.println(new String(json.encode()));
 
@@ -203,36 +203,5 @@ public class Main {
 
 
         //System.out.println(new String(sanitize("ds Tuck (Brian \"Astro\" Bradley), Alex (Teo Hal".getBytes())));
-
-    }
-
-    public static byte[] sanitize(byte[] b){
-        List<Integer> l = new ArrayList<>();
-        int p = 0;
-        for(int i = 0; i < b.length-1; i++){
-            if(b[i] != '\\' && b[i+1] == '"'){
-                i++;
-                l.add(i-p);
-                p = i+1;
-            }
-        }
-
-        if(l.isEmpty()){
-            return b;
-        }
-
-        byte[] r = new byte[b.length+l.size()];
-        p = 0;
-        int x = 0;
-        for(int i : l){
-            System.arraycopy(b, p, r, p+x, i);
-            p += i+1;
-            r[p+x-1] = '\\';
-            r[p+x] = '"';
-            x++;
-        }
-        System.arraycopy(b, p, r, p+x, b.length-p);
-
-        return r;
     }
 }
