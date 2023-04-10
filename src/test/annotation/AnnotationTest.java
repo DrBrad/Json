@@ -25,7 +25,22 @@ public class AnnotationTest {
         json.put("boolTest", true);
         json.put("nullTest", null);
 
-        Movie m = (Movie) Json.fromJson(Movie.class, json);
+        //SERIALIZE TEST
+        Movie2 m = (Movie2) Json.fromJson(Movie2.class, json);
+
+        System.out.println(m.getTitle());
+        System.out.println(m.getDescription());
+        System.out.println(m.getRating());
+        System.out.println(m.getTime());
+        System.out.println(m.getGenre());
+        System.out.println(m.getYear());
+        System.out.println(m.getComing());
+        System.out.println(m.getPortrait());
+        System.out.println(m.getLandscape());
+        System.out.println(m.getBoolTest());
+        System.out.println(m.getNullTest());
+
+        //DESERIALIZE TEST
         json = Json.toJson(m);
         System.out.println(json);
     }

@@ -3,6 +3,7 @@ package unet.json;
 import unet.json.variables.*;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,6 +55,46 @@ public class Json {
         Constructor<?> constructor = c.getDeclaredConstructor();
         Object i = constructor.newInstance();
 
+        for(Field field : c.getDeclaredFields()){
+            if(field.isAnnotationPresent(JsonExpose.class) && field.getAnnotation(JsonExpose.class).deserialize()){
+                final String k = field.getName();
+
+                if(j.containsKey(k)){
+                    field.setAccessible(true);
+
+                    if(String.class.isAssignableFrom(field.getType())){
+                        field.set(i, j.getString(k));
+
+                    }else if(field.getType() == int.class){
+                        field.set(i, j.getInteger(k));
+
+                    }else if(field.getType() == long.class){
+                        //}else if(Long.class.isAssignableFrom(method.getParameterTypes()[0])){
+                        field.set(i, j.getLong(k));
+
+                    }else if(field.getType() == double.class){
+                        //}else if(Double.class.isAssignableFrom(method.getParameterTypes()[0])){
+                        field.set(i, j.getDouble(k));
+
+                    }else if(field.getType() == byte.class){
+                        //}else if(Byte.class.isAssignableFrom(method.getParameterTypes()[0])){
+                        field.set(i, j.getBytes(k));
+
+                    }else if(field.getType() == boolean.class){
+                        //}else if(Boolean.class.isAssignableFrom(method.getParameterTypes()[0])){
+                        field.set(i, j.getBoolean(k));
+
+                    }else if(List.class.isAssignableFrom(field.getType())){
+                        field.set(i, j.getJsonArray(k));
+
+                    }else if(Map.class.isAssignableFrom(field.getType())){
+                        field.set(i, j.getJsonObject(k));
+                    }
+                }
+            }
+        }
+
+        /*
         for(Method method : i.getClass().getDeclaredMethods()){
             if(method.isAnnotationPresent(JsonAnnotation.class)){
                 if(method.getReturnType() == void.class){
@@ -93,12 +134,14 @@ public class Json {
                 }
             }
         }
+        */
 
         return i;
     }
 
-    public static JsonObject toJson(Object o){
+    public static JsonObject toJson(Object o)throws IllegalAccessException {
         JsonObject j = new JsonObject();
+        /*
         for(Method method : o.getClass().getDeclaredMethods()){
             if(method.isAnnotationPresent(JsonAnnotation.class)){
                 try{
@@ -110,6 +153,15 @@ public class Json {
                 }
             }
         }
+        */
+
+        for(Field field : o.getClass().getDeclaredFields()){
+            if(field.isAnnotationPresent(JsonExpose.class) && field.getAnnotation(JsonExpose.class).serialize()){
+                field.setAccessible(true);
+                j.put(field.getName(), field.get(o));
+            }
+        }
+
         return j;
     }
 
