@@ -46,6 +46,10 @@ JsonArray jar = new JsonArray(b);
 
 //CREATE JSON
 JsonArray jar = new JsonArray();
+
+//ADD | GET
+jar.add(1000);
+System.out.println(jar.get(0));
 ```
 
 **Json Object | Map**
@@ -60,17 +64,10 @@ JsonObject job = new JsonObject(b);
 
 //CREATE JSON
 JsonObject job = new JsonObject();
-```
 
-**Put | Get data**
-```Java
-//ARRAY
-jar.put(1000);
-jar.get(0);
-
-//MAP
+//PUT | GET
 job.put("KEY", 100);
-job.get("KEY");
+System.out.println(job.get("KEY"));
 ```
 
 **Encoding to byte array**
@@ -81,4 +78,30 @@ bar.encode();
 **Readable String**
 ```Java
 System.out.println(bar.toString());
+```
+
+**Annotations**
+```Java
+public static void main(String[] args)throws Exception {
+    JsonObject json = new JsonObject();
+    json.put("title", "Annotation Test");
+    Foo f = (Foo) Json.fromJson(Foo.class, json);
+
+    System.out.println(f.getTitle()); //SHOULD RETURN - "Annotation Test"
+
+    json = Json.toJson(f);
+}
+
+public class Foo {
+
+    @JsonAnnotation(key = "title")
+    public String getTitle(){
+        return title;
+    }
+
+    @JsonAnnotation(key = "title")
+    public void setTitle(String title){
+        this.title = title;
+    }
+}
 ```
