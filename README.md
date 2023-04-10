@@ -80,28 +80,29 @@ bar.encode();
 System.out.println(bar.toString());
 ```
 
-**Annotations**
+**Annotation Serialization**
 ```Java
 public static void main(String[] args)throws Exception {
     JsonObject json = new JsonObject();
     json.put("title", "Annotation Test");
+    
+    //SERIALIZE
     Foo f = (Foo) Json.fromJson(Foo.class, json);
-
     System.out.println(f.getTitle()); //SHOULD RETURN - "Annotation Test"
 
+    //DE-SERIALIZE
     json = Json.toJson(f);
 }
 
-public class Foo {
+public static class Foo {
 
+    @JsonExpose
     private String title;
 
-    @JsonAnnotation(key = "title")
     public String getTitle(){
         return title;
     }
 
-    @JsonAnnotation(key = "title")
     public void setTitle(String title){
         this.title = title;
     }
