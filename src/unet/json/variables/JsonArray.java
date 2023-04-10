@@ -55,19 +55,19 @@ public class JsonArray implements JsonVariable, JsonObserver {
         }
     }
 
-    public void add(boolean b){
+    public void add(Boolean b){
         add(new JsonBoolean(b));
     }
 
-    public void add(int i){
+    public void add(Integer i){
         add(new JsonNumber(Integer.toString(i)));
     }
 
-    public void add(long l){
+    public void add(Long l){
         add(new JsonNumber(Long.toString(l)));
     }
 
-    public void add(double d){
+    public void add(Double d){
         add(new JsonNumber(Double.toString(d)));
     }
 
@@ -103,6 +103,18 @@ public class JsonArray implements JsonVariable, JsonObserver {
 
         }else if(o instanceof JsonVariable){
             add((JsonVariable) o);
+
+        }else if(o instanceof Boolean){
+            add(new JsonBoolean((Boolean) o));
+
+        }else if(o instanceof Integer){
+            add(new JsonNumber(Integer.toString((Integer) o)));
+
+        }else if(o instanceof Long){
+            add(new JsonNumber(Long.toString((Long) o)));
+
+        }else if(o instanceof Double){
+            add(new JsonNumber(Double.toString((Double) o)));
         }
     }
 
@@ -117,19 +129,19 @@ public class JsonArray implements JsonVariable, JsonObserver {
         }
     }
 
-    public void set(int i, boolean b){
+    public void set(int i, Boolean b){
         set(i, new JsonBoolean(b));
     }
 
-    public void set(int i, int j){
+    public void set(int i, Integer j){
         set(i, new JsonNumber(Integer.toString(j)));
     }
 
-    public void set(int i, long l){
+    public void set(int i, Long l){
         set(i, new JsonNumber(Long.toString(l)));
     }
 
-    public void set(int i, double d){
+    public void set(int i, Double d){
         set(i, new JsonNumber(Double.toString(d)));
     }
 
@@ -165,6 +177,18 @@ public class JsonArray implements JsonVariable, JsonObserver {
 
         }else if(o instanceof JsonVariable){
             set(i, (JsonVariable) o);
+
+        }else if(o instanceof Boolean){
+            set(i, new JsonBoolean((Boolean) o));
+
+        }else if(o instanceof Integer){
+            set(i, new JsonNumber(Integer.toString((Integer) o)));
+
+        }else if(o instanceof Long){
+            set(i, new JsonNumber(Long.toString((Long) o)));
+
+        }else if(o instanceof Double){
+            set(i, new JsonNumber(Double.toString((Double) o)));
         }
     }
 

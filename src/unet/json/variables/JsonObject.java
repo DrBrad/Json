@@ -27,7 +27,9 @@ public class JsonObject  implements JsonVariable, JsonObserver {
                 throw new IllegalArgumentException("Map keys must be in byte, string, or bencodebyte form.");
             }
 
-            if(m.get(o) instanceof JsonVariable){
+            if(m.get(o) == null){
+                put(k, new JsonNull());
+            }else if(m.get(o) instanceof JsonVariable){
                 put(k, (JsonVariable) m.get(o));
             }else if(m.get(o) instanceof Number){
                 put(k, new JsonNumber((m.get(o)).toString()));
@@ -36,11 +38,11 @@ public class JsonObject  implements JsonVariable, JsonObserver {
             }else if(m.get(o) instanceof String){
                 put(k, new JsonBytes(((String) m.get(o)).getBytes()));
             }else if(m.get(o) instanceof byte[]){
-                put(k, new JsonBytes((byte[]) o));
+                put(k, new JsonBytes((byte[]) m.get(o)));
             }else if(m.get(o) instanceof List<?>){
-                put(k, new JsonArray((List<?>) o));
+                put(k, new JsonArray((List<?>) m.get(o)));
             }else if(m.get(o) instanceof Map<?, ?>){
-                put(k, new JsonObject((Map<?, ?>) o));
+                put(k, new JsonObject((Map<?, ?>) m.get(o)));
             }
         }
     }
@@ -65,7 +67,6 @@ public class JsonObject  implements JsonVariable, JsonObserver {
     }
 
     public void put(String k, boolean b){
-        System.out.println("PUT "+k);
         put(new JsonBytes(k.getBytes()), new JsonBoolean(b));
     }
 
@@ -111,6 +112,18 @@ public class JsonObject  implements JsonVariable, JsonObserver {
 
         }else if(o instanceof JsonVariable){
             put(new JsonBytes(k.getBytes()), (JsonVariable) o);
+
+        }else if(o instanceof Boolean){
+            put(new JsonBytes(k.getBytes()), new JsonBoolean((Boolean) o));
+
+        }else if(o instanceof Integer){
+            put(new JsonBytes(k.getBytes()), new JsonNumber(Integer.toString((Integer) o)));
+
+        }else if(o instanceof Long){
+            put(new JsonBytes(k.getBytes()), new JsonNumber(Long.toString((Long) o)));
+
+        }else if(o instanceof Double){
+            put(new JsonBytes(k.getBytes()), new JsonNumber(Double.toString((Double) o)));
         }
     }
 

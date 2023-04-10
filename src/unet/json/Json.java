@@ -14,9 +14,10 @@ public class Json {
     private byte[] buf;
     private int pos = 0;
 
-    //WE NEED TO WORRY ABOUT TRIM...
-    //Make hasmaps and arraylists map and list
-    //make the i/o streams
+    //I/O STREAM FOR JSON
+    //SERIALIZE JSON - PRETTY AND NOT
+    //REMOVE OBSERVER IF SET OR PUT
+    //FINISH SANITIZATION...
 
     public byte[] encode(JsonArray l){
         buf = new byte[l.byteSize()];
@@ -46,8 +47,6 @@ public class Json {
     }
 */
 
-
-
     public static Object fromJson(Class c, JsonObject j)throws ReflectiveOperationException {
         Constructor<?> constructor = c.getDeclaredConstructor();
         Object i = constructor.newInstance();
@@ -58,13 +57,10 @@ public class Json {
                     final String k = method.getAnnotation(JsonAnnotation.class).key();
 
                     if(j.containsKey(k)){
-                        //if(j.get(k) == method.getReturnType()){
-
                         if(String.class.isAssignableFrom(method.getParameterTypes()[0])){
                             method.invoke(i, j.getString(k));
 
                         }else if(method.getParameterTypes()[0] == int.class){
-                        //}else if(Integer.class.isAssignableFrom(method.getParameterTypes()[0])){
                             method.invoke(i, j.getInteger(k));
 
                         }else if(method.getParameterTypes()[0] == long.class){
@@ -90,16 +86,6 @@ public class Json {
                             method.invoke(i, j.getJsonObject(k));
 
                         }
-
-
-                        /*
-                        if(method.getParameterTypes()[0] == String.class){
-                            method.invoke(i, j.getString(k));
-
-                        }else if(method.getParameterTypes()[0] == Number.class){
-                            method.invoke(i, j.getString(k));
-                        }*/
-                        //}
                     }
                 }
             }
@@ -114,7 +100,6 @@ public class Json {
             if(method.isAnnotationPresent(JsonAnnotation.class)){
                 try{
                     if(method.getReturnType() != void.class){
-                        System.out.println(method.getReturnType()+"  - "+method.getAnnotation(JsonAnnotation.class).key()+" = "+method.invoke(o));
                         j.put(method.getAnnotation(JsonAnnotation.class).key(), method.invoke(o));
                     }
                 }catch(ReflectiveOperationException e){
