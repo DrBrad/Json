@@ -19,6 +19,7 @@ public class IOTest {
         JsonArray l = new JsonArray();
         l.add("Test Array");
         json.put("array", l);
+
         json.put("title", "Earth to Echo"); //TEST STRING
         json.put("coming", 1680303600); //TEST INT
         json.put("boolTest", true); //TEST BOOLEAN
