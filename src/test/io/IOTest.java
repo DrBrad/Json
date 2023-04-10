@@ -30,6 +30,6 @@ public class IOTest {
         w.flush();
 
         JsonReader r = new JsonReader(new ByteArrayInputStream(json.encode()));
-        //json = r.read();
+        json = r.read();
     }
 }

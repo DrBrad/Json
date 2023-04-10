@@ -30,6 +30,7 @@ public class FunctionTest {
         json.put("boolTest", true); //TEST BOOLEAN
         json.put("nullTest", null); //TEST NULL
 
+        System.out.println("GENERAL TEST");
         System.out.println(json);
 
 
@@ -52,7 +53,19 @@ public class FunctionTest {
 
         json = new JsonObject(m);
 
+        System.out.println("\r\n\r\n");
+        System.out.println("MAP TO OBJECT TEST");
         System.out.println(json);
 
+
+        //TEST ENCODE / DECODE
+        byte[] b = json.encode();
+        System.out.println("\r\n\r\n");
+        System.out.println("ENCODE TEST");
+        System.out.println(new String(b));
+
+        System.out.println("\r\n\r\n");
+        System.out.println("DECODE TEST");
+        System.out.println(new JsonObject(b));
     }
 }

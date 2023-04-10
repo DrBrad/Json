@@ -34,22 +34,6 @@ public class Json {
         put(m);
         return buf;
     }
-/*
-    public JsonVariable decode(byte[] buf, int off){
-        this.buf = buf;
-        pos = off;
-
-        switch(buf[pos]){
-            case '{':
-                return getMap();
-
-            case '[':
-                return getList();
-        }
-
-        return null;
-    }
-*/
 
     public static Object fromJson(Class c, JsonObject j)throws ReflectiveOperationException {
         Constructor<?> constructor = c.getDeclaredConstructor();
@@ -169,13 +153,13 @@ public class Json {
     public List<JsonVariable> decodeArray(byte[] buf, int off){
         this.buf = buf;
         pos = off;
-        return decodeArray();
+        return getArray();
     }
 
     public Map<JsonBytes, JsonVariable> decodeObject(byte[] buf, int off){
         this.buf = buf;
         pos = off;
-        return decodeObject();
+        return getObject();
     }
 
     private void put(JsonVariable v){
@@ -223,68 +207,50 @@ public class Json {
     private void put(JsonArray l){
         buf[pos] = '[';
         pos++;
-
-        for(int i = 0; i < l.size(); i++){
+        for(int i = 0; i < l.size()-1; i++){
             put(l.valueOf(i));
             buf[pos] = ',';
             pos++;
         }
-        buf[pos-1] = ']';
+        put(l.valueOf(l.size()-1));
+        buf[pos] = ']';
+        pos++;
     }
 
     private void put(JsonObject m){
         buf[pos] = '{';
         pos++;
 
+        int i = 0;
         for(JsonBytes k : m.keySet()){
             put(k);
             buf[pos] = ':';
             pos++;
             put(m.valueOf(k));
-            buf[pos] = ',';
-            pos++;
-        }
-        buf[pos-1] = '}';
-    }
 
-    private List<JsonVariable> decodeArray(){
-        trim();
-
-        if(buf[pos] == '['){
-            ArrayList<JsonVariable> a = new ArrayList<>();
-            pos++;
-            //trim();
-
-            while(buf[pos] != ']'){
-                trim();
-                a.add(get());
+            i++;
+            if(i < m.size()){
+                buf[pos] = ',';
+                pos++;
             }
-            pos++;
-            return a;
         }
-        return null;
+        buf[pos] = '}';
+        pos++;
     }
 
-    private Map<JsonBytes, JsonVariable> decodeObject(){
-        trim();
 
-        if(buf[pos] == '{'){
-            HashMap<JsonBytes, JsonVariable> m = new HashMap<>();
-            pos++;
-            //trim();
 
-            while(buf[pos] != '}'){
-                //final JsonBytes k = getBytes();
-                trim();
-                m.put(getBytes(), get());
-                //trim();
-                //m.put(getBytes(), get());
-            }
-            pos++;
-            return m;
-        }
-        return null;
-    }
+
+
+
+
+
+
+
+
+
+
+
 
     private JsonVariable get(){
         //IF CASE 0-9 = NUMBER
@@ -320,10 +286,10 @@ public class Json {
                 return getNull();
 
             case '{':
-                return getMap();
+                return new JsonObject(getObject());
 
             case '[':
-                return getList();
+                return new JsonArray(getArray());
 
             default:
                 if(isNumber()){
@@ -335,14 +301,12 @@ public class Json {
     }
 
     private JsonNull getNull(){
-        //trim();
         pos += 5;
         trim();
         return new JsonNull();
     }
 
     private JsonBoolean getBoolean(boolean bool){
-        //trim();
         pos += (bool) ? 5 : 6;
         trim();
 
@@ -350,9 +314,6 @@ public class Json {
     }
 
     private JsonNumber getNumber(){
-        //trim();
-        //pos++;
-
         int s = pos;
         while(isNumber()){
             pos++;
@@ -368,7 +329,6 @@ public class Json {
     }
 
     private JsonBytes getBytes(){
-        //trim();
         pos++;
 
         int s = pos;
@@ -385,13 +345,45 @@ public class Json {
         return new JsonBytes(b);
     }
 
-    private JsonArray getList(){
-        return new JsonArray(decodeArray());
+
+    private List<JsonVariable> getArray(){
+        trim();
+
+        if(buf[pos] == '['){
+            ArrayList<JsonVariable> a = new ArrayList<>();
+            pos++;
+
+            while(buf[pos] != ']'){
+                trim();
+                a.add(get());
+            }
+            pos++;
+            return a;
+        }
+        return null;
     }
 
-    private JsonObject getMap(){
-        return new JsonObject(decodeObject());
+    private Map<JsonBytes, JsonVariable> getObject(){
+        trim();
+
+        if(buf[pos] == '{'){
+            HashMap<JsonBytes, JsonVariable> m = new HashMap<>();
+            pos++;
+
+            while(buf[pos] != '}'){
+                trim();
+                m.put(getBytes(), get());
+            }
+            pos++;
+            return m;
+        }
+        return null;
     }
+
+
+
+
+
 
     private void trim(){
         while(isTrimmable()){

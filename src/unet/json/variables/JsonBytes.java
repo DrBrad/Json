@@ -10,10 +10,11 @@ public class JsonBytes implements JsonVariable {
     private int s;
 
     public JsonBytes(byte[] b){
-        this.b = sanitize(b);
+        this.b = b;//sanitize(b);
         s = this.b.length+2;
     }
 
+    /*
     private byte[] sanitize(byte[] b){
         List<Integer> l = new ArrayList<>();
         int p = 0;
@@ -43,7 +44,7 @@ public class JsonBytes implements JsonVariable {
 
         return r;
     }
-
+    */
     public byte[] getBytes(){
         byte[] r = new byte[s];
         r[0] = '"';
