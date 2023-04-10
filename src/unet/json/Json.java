@@ -18,6 +18,9 @@ public class Json {
     //SERIALIZE JSON - PRETTY AND NOT
     //REMOVE OBSERVER IF SET OR PUT
     //FINISH SANITIZATION...
+    //Annotation object/arrays within object...
+    //Annotation Input Stream to/from i/o
+    //Annotation to/from bytes
 
     public byte[] encode(JsonArray l){
         buf = new byte[l.byteSize()];
