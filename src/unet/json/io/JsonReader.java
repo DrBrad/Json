@@ -20,7 +20,7 @@ public class JsonReader {
     }
 
     public JsonObject read()throws IOException {
-        //in.read();
+        in.read();
         /*
         trim();
 
@@ -36,10 +36,9 @@ public class JsonReader {
             pos++;
             return m;
         }*/
+        //byte b = (byte) in.read();
 
-        decodeObject();
-
-        return null;
+        return new JsonObject(decodeObject());
     }
 
     public void close()throws IOException {
@@ -81,39 +80,19 @@ public class JsonReader {
     */
 
     private Map<JsonBytes, JsonVariable> decodeObject()throws IOException {
-
-        byte b = (byte) in.read();
-        if(b == '{'){
-            Map<JsonBytes, JsonVariable> m = new HashMap<>();
-
-            while(true){//in.read() != '}'){
-                JsonBytes k = getBytes();
-                System.out.println(new String(k.getObject()));
-                //trim();
-                //m.put(getBytes(), get());
+        Map<JsonBytes, JsonVariable> m = new HashMap<>();
+        do{
+            if(in.read() == '}'){ //SKIP "
+                break;
             }
-        }
 
+            JsonBytes k = getBytes();
+            in.read();
+            m.put(k, get());
 
-        System.out.println("1 "+(char) in.read());
-        //trim();
+        }while(in.read() != '}');
 
-        /*
-        if(buf[pos] == '{'){
-            HashMap<JsonBytes, JsonVariable> m = new HashMap<>();
-            pos++;
-            //trim();
-
-            while(buf[pos] != '}'){
-                trim();
-                m.put(getBytes(), get());
-            }
-            pos++;
-            return m;
-        }*/
-        System.out.println((char) in.read());
-
-        return null;
+        return m;
     }
 
     /*
@@ -223,26 +202,89 @@ public class JsonReader {
     private JsonObject getMap()throws IOException {
         return new JsonObject(decodeObject());
     }*/
+    private JsonVariable get()throws IOException {
+        //IF CASE 0-9 = NUMBER
+        //IF CASE T | F = BOOLEAN
+        //IF CASE " = STRING
+        //IF CASE { = MAP
+        //IF CASE [ = LIST
+        //IF CASE n = NULL
+        //trim();
+
+        //System.out.println((char)(buf[pos]));
+
+        switch(in.read()){
+            case '"':
+                //System.out.println("STRING");
+                return getBytes();
+
+            case 't':
+                //System.out.println("BOOL - TRUE");
+                //return getBoolean(true);
+
+            case 'T':
+                //System.out.println("BOOL - TRUE");
+                //return getBoolean(true);
+
+            case 'f':
+                //System.out.println("BOOL - FALSE");
+                //return getBoolean(false);
+
+            case 'F':
+                //System.out.println("BOOL - FALSE");
+                //return getBoolean(false);
+
+            case 'n':
+                //System.out.println("NULL");
+                //return getNull();
+
+            case 'N':
+                //System.out.println("NULL");
+                //return getNull();
+
+            case '{':
+                //System.out.println("OBJECT");
+                //return getMap();
+                return new JsonObject(decodeObject());
+
+            case '[':
+                //System.out.println("LIST");
+                //return getList();
+
+            default:
+                //if(isNumber()){
+                    //return getNumber();
+                //}
+        }
+
+        return null;
+    }
 
     private JsonBytes getBytes()throws IOException {
-        byte b = (byte) in.read();
-        if(b == '"'){
-            System.out.println("READ");
+        byte[] buf = new byte[1024];
+        int i = 0;
+        byte b;
+        while((b = (byte) in.read()) != '"'){
+            buf[i] = b;
+            i++;
 
-            byte[] buf = new byte[4096];
-            int i = 0;
-            while((b = (byte) in.read()) != '"'){
-                buf[i] = b;
-                i++;
-
-                if(i >= buf.length){
-                    //INCREASE SIZE...
-                }
+            if(i >= buf.length){
+                byte[] r = new byte[buf.length+1024];
+                System.arraycopy(buf, 0, r, 0, i);
+                buf = r;
             }
-
-            return new JsonBytes(buf);
         }
-        return null;
+
+        if(i < buf.length){
+            byte[] r = new byte[i];
+            System.arraycopy(buf, 0, r, 0, i);
+            //System.out.println(new String(r));
+            return new JsonBytes(r);
+        }
+
+        //System.out.println(new String(buf));
+
+        return new JsonBytes(buf);
     }
 
 
