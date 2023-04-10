@@ -94,6 +94,8 @@ public static void main(String[] args)throws Exception {
 
 public class Foo {
 
+    private String title;
+
     @JsonAnnotation(key = "title")
     public String getTitle(){
         return title;
