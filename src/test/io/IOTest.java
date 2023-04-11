@@ -21,7 +21,7 @@ public class IOTest {
 
         JsonObject k = new JsonObject();
         k.put("insert", "Insert value");
-        json.put("object", k); //TEST LAYERED PUT
+        //json.put("object", k); //TEST LAYERED PUT
 /*
         JsonArray l = new JsonArray();
         l.add("Test Array");

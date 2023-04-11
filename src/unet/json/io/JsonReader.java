@@ -20,7 +20,7 @@ public class JsonReader {
     }
 
     public JsonObject readJsonObject()throws IOException {
-        in.read();
+        //in.read();
         /*
         trim();
 
@@ -37,6 +37,7 @@ public class JsonReader {
             return m;
         }*/
         //byte b = (byte) in.read();
+        n = (byte) in.read();
 
         return new JsonObject(decodeObject());
     }
@@ -51,7 +52,12 @@ public class JsonReader {
 
 
     private byte read()throws IOException {
+        byte p = n;
         n = (byte) in.read();
+        return p;
+    }
+
+    private byte sneak(){
         return n;
     }
 
@@ -83,6 +89,29 @@ public class JsonReader {
     */
 
     private Map<JsonBytes, JsonVariable> decodeObject()throws IOException {
+
+        //readObject = {
+        //read so we can see {
+        //reaad one so we can see "
+
+        Map<JsonBytes, JsonVariable> m = new HashMap<>();
+        read();
+        read();
+
+        while(sneak() != '}'){
+            JsonBytes k = getBytes();
+            System.out.println("T: "+new String(k.getObject()));
+            read();
+            m.put(k, get());
+
+            //read();
+            //System.out.println((char)sneak());
+            //in.read();
+            System.out.println("S: "+(char)sneak());
+        }
+
+
+        /*
         Map<JsonBytes, JsonVariable> m = new HashMap<>();
         do{
             if(in.read() == '}'){ //SKIP "
@@ -90,21 +119,12 @@ public class JsonReader {
             }
 
             JsonBytes k = getBytes();
+            System.out.println(new String(k.getObject()));
+            //in.read();
             in.read();
             m.put(k, get());
 
         }while(in.read() != '}');
-        /*
-        Map<JsonBytes, JsonVariable> m = new HashMap<>();
-
-        while((n = (byte) in.read()) != '}'){
-            JsonBytes k = getBytes();
-            System.out.println(new String(k.getObject()));
-            in.read();
-            m.put(k, get());
-
-            //in.read();
-        }
         */
 
 
@@ -229,8 +249,8 @@ public class JsonReader {
 
         //System.out.println((char)(buf[pos]));
 
-        byte b = (byte) in.read();
-        switch(b){
+        //byte b = (byte) in.read();
+        switch(sneak()){
             case '"':
                 return getBytes();
 
@@ -266,7 +286,7 @@ public class JsonReader {
                 //return getList();
 
             default:
-                if(isNumber(b)){
+                if(isNumber(sneak())){
                     //return getNumber();
                 }
         }
@@ -278,7 +298,7 @@ public class JsonReader {
         byte[] buf = new byte[1024];
         int i = 0;
         byte b;
-        while((b = (byte) in.read()) != '"'){
+        while((b = read()) != '"'){
             buf[i] = b;
             i++;
 
