@@ -412,6 +412,7 @@ public class Json {
                 buf[pos] == '7' ||
                 buf[pos] == '8' ||
                 buf[pos] == '9' ||
+                buf[pos] == '-' ||
                 buf[pos] == '.');
     }
 }
