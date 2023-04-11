@@ -14,6 +14,11 @@ public class IOTest {
 
         JsonObject json = new JsonObject();
 
+
+
+
+
+
         JsonObject k = new JsonObject();
         k.put("insert", "Insert value");
         json.put("object", k); //TEST LAYERED PUT
@@ -36,7 +41,7 @@ public class IOTest {
         System.out.println("\r\n\r\n");
 
         JsonReader r = new JsonReader(new ByteArrayInputStream(json.encode()));
-        json = r.read();
+        json = r.readJsonObject();
         System.out.println(json);
     }
 }

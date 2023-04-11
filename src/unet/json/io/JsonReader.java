@@ -4,9 +4,7 @@ import unet.json.variables.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class JsonReader {
@@ -15,11 +13,13 @@ public class JsonReader {
 
     private InputStream in;
 
+    private byte n; //UNFORTUNATELY WE NEED TO SEEK AHEAD FOR NUMBERS...
+
     public JsonReader(InputStream in){
         this.in = in;
     }
 
-    public JsonObject read()throws IOException {
+    public JsonObject readJsonObject()throws IOException {
         in.read();
         /*
         trim();
@@ -50,7 +50,10 @@ public class JsonReader {
 
 
 
-
+    private byte read()throws IOException {
+        n = (byte) in.read();
+        return n;
+    }
 
 
 
@@ -91,6 +94,19 @@ public class JsonReader {
             m.put(k, get());
 
         }while(in.read() != '}');
+        /*
+        Map<JsonBytes, JsonVariable> m = new HashMap<>();
+
+        while((n = (byte) in.read()) != '}'){
+            JsonBytes k = getBytes();
+            System.out.println(new String(k.getObject()));
+            in.read();
+            m.put(k, get());
+
+            //in.read();
+        }
+        */
+
 
         return m;
     }
@@ -213,38 +229,36 @@ public class JsonReader {
 
         //System.out.println((char)(buf[pos]));
 
-        switch(in.read()){
+        byte b = (byte) in.read();
+        switch(b){
             case '"':
-                //System.out.println("STRING");
                 return getBytes();
 
             case 't':
-                //System.out.println("BOOL - TRUE");
-                //return getBoolean(true);
+                in.skip(3);
+                return new JsonBoolean(true);
 
             case 'T':
-                //System.out.println("BOOL - TRUE");
-                //return getBoolean(true);
+                in.skip(3);
+                return new JsonBoolean(true);
 
             case 'f':
-                //System.out.println("BOOL - FALSE");
-                //return getBoolean(false);
+                in.skip(4);
+                return new JsonBoolean(false);
 
             case 'F':
-                //System.out.println("BOOL - FALSE");
-                //return getBoolean(false);
+                in.skip(4);
+                return new JsonBoolean(false);
 
             case 'n':
-                //System.out.println("NULL");
-                //return getNull();
+                in.skip(3);
+                return new JsonNull();
 
             case 'N':
-                //System.out.println("NULL");
-                //return getNull();
+                in.skip(3);
+                return new JsonNull();
 
             case '{':
-                //System.out.println("OBJECT");
-                //return getMap();
                 return new JsonObject(decodeObject());
 
             case '[':
@@ -252,9 +266,9 @@ public class JsonReader {
                 //return getList();
 
             default:
-                //if(isNumber()){
+                if(isNumber(b)){
                     //return getNumber();
-                //}
+                }
         }
 
         return null;
@@ -278,21 +292,40 @@ public class JsonReader {
         if(i < buf.length){
             byte[] r = new byte[i];
             System.arraycopy(buf, 0, r, 0, i);
-            //System.out.println(new String(r));
             return new JsonBytes(r);
         }
-
-        //System.out.println(new String(buf));
 
         return new JsonBytes(buf);
     }
 
 
+/*
+    private JsonNumber getNumber()throws IOException {
+        byte[] buf = new byte[1024];
+        int i = 0;
+        byte b;
+        while((b = (byte) in.read()) != '"'){
+            buf[i] = b;
+            i++;
+
+            if(i >= buf.length){
+                byte[] r = new byte[buf.length+1024];
+                System.arraycopy(buf, 0, r, 0, i);
+                buf = r;
+            }
+        }
+
+        if(i < buf.length){
+            byte[] r = new byte[i];
+            System.arraycopy(buf, 0, r, 0, i);
+            return new JsonBytes(r);
+        }
+
+        return new JsonBytes(buf);
+    }
 
 
-
-
-
+/*
     private void trim()throws IOException {
         while(isTrimmable((byte) in.read()));
     }
@@ -305,6 +338,7 @@ public class JsonReader {
                 b == ':' ||
                 b == ',');
     }
+*/
 
     //IS THE DECIMAL POINT CONSIDERED A NUMBER...?
     private boolean isNumber(byte b){
