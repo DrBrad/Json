@@ -37,7 +37,8 @@ public class JsonReader {
             return m;
         }*/
         //byte b = (byte) in.read();
-        n = (byte) in.read();
+        //n = (byte) in.read();
+        read();
 
         return new JsonObject(decodeObject());
     }
@@ -100,14 +101,22 @@ public class JsonReader {
 
         while(sneak() != '}'){
             JsonBytes k = getBytes();
-            System.out.println("T: "+new String(k.getObject()));
-            read();
+            //System.out.println("T: "+new String(k.getObject()));
+            byte b = read();
+            //b = read();
+            System.out.println("S2: "+(char)b+" - "+(char)sneak());
+            //System.out.println("S: "+(char)sneak());
+
+            JsonBytes v = getBytes();
+            System.out.println(new String(k.getObject())+" : "+new String(v.getObject()));
             m.put(k, get());
+
+            //b = read();
+            b = read();
 
             //read();
             //System.out.println((char)sneak());
             //in.read();
-            System.out.println("S: "+(char)sneak());
         }
 
 
@@ -309,12 +318,16 @@ public class JsonReader {
             }
         }
 
+        read();
+
         if(i < buf.length){
             byte[] r = new byte[i];
             System.arraycopy(buf, 0, r, 0, i);
+            //System.out.println("K: "+new String(r));
             return new JsonBytes(r);
         }
 
+        //System.out.println("K: "+new String(buf));
         return new JsonBytes(buf);
     }
 
