@@ -12,6 +12,12 @@ public class IOTest {
     public static void main(String[] args)throws Exception {
         System.out.println("-= I/O TEST =-");
 
+        //String s = String.valueOf(Double.MAX_VALUE);
+        //String s2 = String.valueOf(Double.MIN_VALUE);
+        
+        //System.out.println(s+"  "+s.length());
+        //System.out.println(s2+"  "+s2.length());
+
         JsonObject json = new JsonObject();
 
 
@@ -30,8 +36,8 @@ public class IOTest {
         json.put("title", "Earth to Echo"); //TEST STRING
         json.put("zzz", "asdasd"); //TEST STRING
         json.put("coming", 1680303600); //TEST INT
-        //json.put("boolTest", true); //TEST BOOLEAN
-        //json.put("nullTest", null); //TEST NULL
+        json.put("boolTest", true); //TEST BOOLEAN
+        json.put("nullTest", null); //TEST NULL
 
         System.out.println("OUTPUT TEST");
         JsonWriter w = new JsonWriter(System.out);
