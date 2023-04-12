@@ -13,24 +13,24 @@ public class JsonWriter {
         this.out = out;
     }
 
-    public void write(JsonArray l)throws IOException {
+    public void write(JsonArray2 l)throws IOException {
         out.write('[');
         for(int i = 0; i < l.size()-1; i++){
-            write(l.valueOf(i));
+            //write(l.get(i));
             out.write(',');
         }
-        write(l.valueOf(l.size()-1));
+        //write(l.valueOf(l.size()-1));
         out.write(']');
     }
 
-    public void write(JsonObject m)throws IOException {
+    public void write(JsonObject2 m)throws IOException {
         out.write('{');
 
         int i = 0;
-        for(JsonBytes k : m.keySet()){
-            write(k);
+        for(String k : m.keySet()){
+            //write(k);
             out.write(':');
-            write(m.valueOf(k));
+            //write(m.valueOf(k));
 
             i++;
             if(i < m.size()){
@@ -47,7 +47,7 @@ public class JsonWriter {
     public void close()throws IOException {
         out.close();
     }
-
+/*
     private void write(JsonVariable v)throws IOException {
         if(v instanceof JsonBytes){
             write((JsonBytes) v);
@@ -78,5 +78,5 @@ public class JsonWriter {
 
     private void write(JsonNull n)throws IOException {
         out.write(n.getBytes());
-    }
+    }*/
 }

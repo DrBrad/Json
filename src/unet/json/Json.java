@@ -25,6 +25,8 @@ public class Json {
     //Annotation Input Stream to/from i/o
     //Annotation to/from bytes
     //WE SHOULD BE USING HASH-CODES NOT INSTANCES...
+    //BETTER NUMBER SYSTEM
+    //BETTER CHAR COUNTER SYSTEM...
 
     public byte[] encode(JsonArray2 l){
         buf = new byte[l.byteSize()];
@@ -268,6 +270,11 @@ public class Json {
 
         }else if(v instanceof JsonObject2){
             put((JsonObject2) v);
+
+        }else{
+            byte[] b = { 'n', 'u', 'l', 'l' };
+            System.arraycopy(b, 0, buf, pos, b.length);
+            pos += b.length;
         }
         /*
         if(v instanceof JsonBytes){

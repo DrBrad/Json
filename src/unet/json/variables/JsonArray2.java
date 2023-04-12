@@ -63,7 +63,7 @@ public class JsonArray2 implements JsonVariable, JsonObserver {
     */
 
     public void add(boolean b){
-        setByteSize((b) ? 5 : 6);
+        setByteSize(String.valueOf(b).getBytes().length+1);
         l.add(b);
     }
 
@@ -82,13 +82,13 @@ public class JsonArray2 implements JsonVariable, JsonObserver {
         l.add(d);
     }
 
-    public void add(JsonArray a){
+    public void add(JsonArray2 a){
         l.add(a);
         setByteSize(a.byteSize()+1);
         a.setObserver(this);
     }
 
-    public void add(JsonObject o){
+    public void add(JsonObject2 o){
         l.add(o);
         setByteSize(o.byteSize()+1);
         o.setObserver(this);
@@ -122,13 +122,14 @@ public class JsonArray2 implements JsonVariable, JsonObserver {
                 v instanceof Double ||
                 v instanceof JsonObject2 ||
                 v instanceof JsonArray2){
+            setByteSize(String.valueOf(v).getBytes().length+1);
             l.add(v);
 
         }else if(v instanceof List<?>){
-            l.add(new JsonArray((List<?>) v));
+            add(new JsonArray2((List<?>) v));
 
         }else if(v instanceof Map<?, ?>){
-            l.add(new JsonObject2((Map<?, ?>) v));
+            add(new JsonObject2((Map<?, ?>) v));
         }
     }
 
@@ -161,13 +162,13 @@ public class JsonArray2 implements JsonVariable, JsonObserver {
         l.set(i, d);
     }
 
-    public void set(int i, JsonArray a){
+    public void set(int i, JsonArray2 a){
         l.set(i, a);
         //setByteSize(-l.get(i).byteSize()+a.byteSize());
         a.setObserver(this);
     }
 
-    public void set(int i, JsonObject o){
+    public void set(int i, JsonObject2 o){
         l.set(i, o);
         //setByteSize(-l.get(i).byteSize()+o.byteSize());
         o.setObserver(this);
@@ -183,7 +184,7 @@ public class JsonArray2 implements JsonVariable, JsonObserver {
             l.set(i, v);
 
         }else if(v instanceof List<?>){
-            l.set(i, new JsonArray((List<?>) v));
+            l.set(i, new JsonArray2((List<?>) v));
 
         }else if(v instanceof Map<?, ?>){
             l.set(i, new JsonObject2((Map<?, ?>) v));
@@ -239,21 +240,21 @@ public class JsonArray2 implements JsonVariable, JsonObserver {
     }
 
     public boolean contains(Number n){
-        return l.contains(new JsonNumber(n.toString()));
+        return l.contains(n);
     }
 
     public boolean contains(Boolean b){
-        return l.contains(new JsonBoolean(b));
+        return l.contains(b);
     }
 
     public boolean contains(String s){
-        return l.contains(new JsonBytes(s.getBytes()));
+        return l.contains(s);
     }
-
+/*
     public boolean contains(byte[] b){
         return l.contains(new JsonBytes(b));
     }
-
+*/
     public boolean contains(List<?> l){
         return this.l.contains(new JsonArray2(l));
     }

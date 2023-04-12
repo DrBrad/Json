@@ -1,7 +1,6 @@
 package test.annotation;
 
 import unet.json.Json;
-import unet.json.variables.JsonObject;
 import unet.json.variables.JsonObject2;
 
 public class AnnotationTest {

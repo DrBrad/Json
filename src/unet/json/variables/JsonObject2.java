@@ -17,15 +17,11 @@ public class JsonObject2 implements JsonVariable, JsonObserver {
 
     public JsonObject2(Map<?, ?> m){
         for(Object o : m.keySet()){
-            String k;
-
             if(o instanceof String){
-                k = (String) o;
+                put((String) o, m.get(o));
             }else{
                 throw new IllegalArgumentException("Map keys must be in string form.");
             }
-
-            put(k, m.get(o));
         }
 
         //this.m = m;
@@ -70,11 +66,11 @@ public class JsonObject2 implements JsonVariable, JsonObserver {
     }
 
     public JsonObject2(byte[] buf){
-        //this(new Json().decodeObject(buf, 0));
+        this(new Json().decodeObject(buf, 0));
     }
 
     public JsonObject2(byte[] buf, int off){
-        //this(new Json().decodeObject(buf, off));
+        this(new Json().decodeObject(buf, off));
     }
 /*
     private void put(String k, Object v){
@@ -89,7 +85,8 @@ public class JsonObject2 implements JsonVariable, JsonObserver {
     }
 */
     public void put(String k, boolean b){
-        setByteSize((b) ? k.getBytes().length+6 : k.getBytes().length+7);
+        setByteSize(k.getBytes().length+String.valueOf(b).getBytes().length+2);
+        //setByteSize((b) ? k.getBytes().length+6 : k.getBytes().length+7);
         m.put(k, b);
     }
 
@@ -136,18 +133,15 @@ public class JsonObject2 implements JsonVariable, JsonObserver {
         if(v == null ||
                 v instanceof String ||
                 v instanceof Boolean ||
-                v instanceof Integer ||
-                v instanceof Long ||
-                v instanceof Double ||
-                v instanceof JsonObject2 ||
-                v instanceof JsonArray2){
+                v instanceof Number){
+            setByteSize(k.getBytes().length+String.valueOf(v).getBytes().length+2);
             m.put(k, v);
 
         }else if(v instanceof List<?>){
-            m.put(k, new JsonArray2((List<?>) v));
+            put(k, new JsonArray2((List<?>) v));
 
         }else if(v instanceof Map<?, ?>){
-            m.put(k, new JsonObject2((Map<?, ?>) v));
+            put(k, new JsonObject2((Map<?, ?>) v));
         }
     }
 /*

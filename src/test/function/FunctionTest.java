@@ -1,8 +1,6 @@
 package test.function;
 
-import unet.json.variables.JsonArray;
 import unet.json.variables.JsonArray2;
-import unet.json.variables.JsonObject;
 import unet.json.variables.JsonObject2;
 
 import java.util.ArrayList;
@@ -14,7 +12,7 @@ public class FunctionTest {
 
     public static void main(String[] args){
         System.out.println("-= OBJECT TEST =-");
-
+/*
         JsonObject2 json = new JsonObject2();
 
         JsonObject2 k = new JsonObject2();
@@ -36,7 +34,7 @@ public class FunctionTest {
         System.out.println(json);
 
 
-        //TEST MAP TO OBJECT...
+        //TEST MAP TO OBJECT...*/
         Map<String, Object> m = new HashMap<>();
 
         Map<String, Object> k2 = new HashMap<>();
@@ -53,11 +51,11 @@ public class FunctionTest {
         m.put("boolTest", true); //TEST BOOLEAN
         m.put("nullTest", null); //TEST NULL
 
-        json = new JsonObject2(m);
+        JsonObject2 json = new JsonObject2(m);
 
         System.out.println("\r\n\r\n");
         System.out.println("MAP TO OBJECT TEST");
-        System.out.println(json);
+        //System.out.println(json);
 
 
         //TEST ENCODE / DECODE
@@ -68,6 +66,6 @@ public class FunctionTest {
 
         System.out.println("\r\n\r\n");
         System.out.println("DECODE TEST");
-        System.out.println(new JsonObject(b));
+        System.out.println(new JsonObject2(b));
     }
 }
