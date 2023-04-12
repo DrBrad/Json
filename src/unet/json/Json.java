@@ -6,6 +6,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,22 +26,22 @@ public class Json {
     //Annotation to/from bytes
     //WE SHOULD BE USING HASH-CODES NOT INSTANCES...
 
-    public byte[] encode(JsonArray l){
+    public byte[] encode(JsonArray2 l){
         buf = new byte[l.byteSize()];
         put(l);
         return buf;
     }
 
-    public byte[] encode(JsonObject m){
+    public byte[] encode(JsonObject2 m){
         buf = new byte[m.byteSize()];
         put(m);
         return buf;
     }
 
-    public static Object fromJson(Class<?> c, JsonObject j)throws ReflectiveOperationException {
+    public static Object fromJson(Class<?> c, JsonObject2 j)throws ReflectiveOperationException {
         Constructor<?> constructor = c.getDeclaredConstructor();
         Object i = constructor.newInstance();
-
+/*
         for(Field field : c.getDeclaredFields()){
             if(field.isAnnotationPresent(JsonExpose.class) && field.getAnnotation(JsonExpose.class).deserialize()){
                 final String k = field.getName();
@@ -150,7 +152,7 @@ public class Json {
                         //field.set(i, fromJson(field.getType(), j.getJsonObject(k)));
                         //field.set(i, j.getJsonObject(k).getObject());
                     }
-                    */
+                    *//*
                 }
             }
         }
@@ -200,8 +202,8 @@ public class Json {
         return i;
     }
 
-    public static JsonObject toJson(Object o)throws IllegalAccessException {
-        JsonObject j = new JsonObject();
+    public static JsonObject2 toJson(Object o)throws IllegalAccessException {
+        JsonObject2 j = new JsonObject2();
         /*
         for(Method method : o.getClass().getDeclaredMethods()){
             if(method.isAnnotationPresent(JsonAnnotation.class)){
@@ -239,19 +241,35 @@ public class Json {
     }
 
 
-    public List<JsonVariable> decodeArray(byte[] buf, int off){
+    public JsonArray2 decodeArray(byte[] buf, int off){
         this.buf = buf;
         pos = off;
         return getArray();
     }
 
-    public Map<JsonBytes, JsonVariable> decodeObject(byte[] buf, int off){
+    public JsonObject2 decodeObject(byte[] buf, int off){
         this.buf = buf;
         pos = off;
         return getObject();
     }
 
-    private void put(JsonVariable v){
+    private void put(Object v){
+        if(v instanceof String){
+            put((String) v);
+
+        }else if(v instanceof Number){
+            put((Number) v);
+
+        }else if(v instanceof Boolean){
+            put((boolean) v);
+
+        }else if(v instanceof JsonArray2){
+            put((JsonArray2) v);
+
+        }else if(v instanceof JsonObject2){
+            put((JsonObject2) v);
+        }
+        /*
         if(v instanceof JsonBytes){
             put((JsonBytes) v);
         }else if(v instanceof JsonNumber){
@@ -265,57 +283,69 @@ public class Json {
         }else if(v instanceof JsonObject){
             put((JsonObject) v);
         }
+        */
     }
 
     //THIS SEEMS REDUNDANT....
-    private void put(JsonBytes v){
+    private void put(String v){
         byte[] b = v.getBytes();
         System.arraycopy(b, 0, buf, pos, b.length);
         pos += b.length;
     }
 
-    private void put(JsonNumber n){
-        byte[] b = n.getBytes();
+    private void put(Number n){
+        byte[] b = n.toString().getBytes();
         System.arraycopy(b, 0, buf, pos, b.length);
         pos += b.length;
     }
 
-    private void put(JsonBoolean n){
-        byte[] b = n.getBytes();
+    private void put(boolean n){
+        byte[] b = (n) ? new byte[]{
+                't',
+                'r',
+                'u',
+                'e'
+        } : new byte[]{
+                'f',
+                'a',
+                'l',
+                's',
+                'e'
+        };
         System.arraycopy(b, 0, buf, pos, b.length);
         pos += b.length;
     }
-
+/*
     private void put(JsonNull n){
         byte[] b = n.getBytes();
         System.arraycopy(b, 0, buf, pos, b.length);
         pos += b.length;
     }
     //THIS SEEMS REDUNDANT
-
-    private void put(JsonArray l){
+*/
+    private void put(JsonArray2 l){
         buf[pos] = '[';
         pos++;
         for(int i = 0; i < l.size()-1; i++){
-            put(l.valueOf(i));
+            put(l.get(i));
             buf[pos] = ',';
             pos++;
         }
-        put(l.valueOf(l.size()-1));
+        put(l.get(l.size()-1));
         buf[pos] = ']';
         pos++;
     }
 
-    private void put(JsonObject m){
+    private void put(JsonObject2 m){
         buf[pos] = '{';
         pos++;
 
         int i = 0;
-        for(JsonBytes k : m.keySet()){
+        for(String k : m.keySet()){
             put(k);
             buf[pos] = ':';
             pos++;
-            put(m.valueOf(k));
+            put(m.get(k));
 
             i++;
             if(i < m.size()){
@@ -341,7 +371,7 @@ public class Json {
 
 
 
-    private JsonVariable get(){
+    private Object get()throws ParseException {
         //IF CASE 0-9 = NUMBER
         //IF CASE T | F = BOOLEAN
         //IF CASE " = STRING
@@ -354,31 +384,31 @@ public class Json {
 
         switch(buf[pos]){
             case '"':
-                return getBytes();
+                return getString();
 
             case 't':
-                return getBoolean(true);
+                return true;//getBoolean(true);
 
             case 'T':
-                return getBoolean(true);
+                return true;//getBoolean(true);
 
             case 'f':
-                return getBoolean(false);
+                return false;//getBoolean(false);
 
             case 'F':
-                return getBoolean(false);
+                return false;//getBoolean(false);
 
             case 'n':
-                return getNull();
+                return null;//getNull();
 
             case 'N':
-                return getNull();
+                return null;//getNull();
 
             case '{':
-                return new JsonObject(getObject());
+                return getObject();
 
             case '[':
-                return new JsonArray(getArray());
+                return getArray();
 
             default:
                 if(isNumber()){
@@ -389,6 +419,47 @@ public class Json {
         return null;
     }
 
+
+    private JsonArray2 getArray(){
+        trim();
+
+        if(buf[pos] == '['){
+            JsonArray2 j = new JsonArray2();
+            pos++;
+
+            while(buf[pos] != ']'){
+                trim();
+                try{
+                    j.add(get());
+                }catch(ParseException e){
+                }
+            }
+            pos++;
+            return j;
+        }
+        return null;
+    }
+
+    private JsonObject2 getObject(){
+        trim();
+
+        if(buf[pos] == '{'){
+            JsonObject2 j = new JsonObject2();
+            pos++;
+
+            while(buf[pos] != '}'){
+                trim();
+                try{
+                    j.put(getString(), get());
+                }catch(ParseException e){
+                }
+            }
+            pos++;
+            return j;
+        }
+        return null;
+    }
+/*
     private JsonNull getNull(){
         pos += 5;
         trim();
@@ -401,8 +472,8 @@ public class Json {
 
         return new JsonBoolean(bool);
     }
-
-    private JsonNumber getNumber(){
+*/
+    private Number getNumber()throws ParseException {
         int s = pos;
         while(isNumber()){
             pos++;
@@ -414,10 +485,10 @@ public class Json {
         pos++;
         trim();
 
-        return new JsonNumber(new String(b));
+        return NumberFormat.getInstance().parse(new String(b));
     }
 
-    private JsonBytes getBytes(){
+    private String getString(){
         pos++;
 
         int s = pos;
@@ -431,42 +502,7 @@ public class Json {
         pos++;
         trim();
 
-        return new JsonBytes(b);
-    }
-
-
-    private List<JsonVariable> getArray(){
-        trim();
-
-        if(buf[pos] == '['){
-            ArrayList<JsonVariable> a = new ArrayList<>();
-            pos++;
-
-            while(buf[pos] != ']'){
-                trim();
-                a.add(get());
-            }
-            pos++;
-            return a;
-        }
-        return null;
-    }
-
-    private Map<JsonBytes, JsonVariable> getObject(){
-        trim();
-
-        if(buf[pos] == '{'){
-            HashMap<JsonBytes, JsonVariable> m = new HashMap<>();
-            pos++;
-
-            while(buf[pos] != '}'){
-                trim();
-                m.put(getBytes(), get());
-            }
-            pos++;
-            return m;
-        }
-        return null;
+        return new String(b);
     }
 
 

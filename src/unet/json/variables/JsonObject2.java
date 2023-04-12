@@ -15,8 +15,20 @@ public class JsonObject2 implements JsonVariable, JsonObserver {
     public JsonObject2(){
     }
 
-    public JsonObject2(Map<String, Object> m){
-        this.m = m;
+    public JsonObject2(Map<?, ?> m){
+        for(Object o : m.keySet()){
+            String k;
+
+            if(o instanceof String){
+                k = (String) o;
+            }else{
+                throw new IllegalArgumentException("Map keys must be in string form.");
+            }
+
+            put(k, m.get(o));
+        }
+
+        //this.m = m;
         return;
         /*
         for(Object o : m.keySet()){
@@ -77,23 +89,35 @@ public class JsonObject2 implements JsonVariable, JsonObserver {
     }
 */
     public void put(String k, boolean b){
+        setByteSize((b) ? k.getBytes().length+6 : k.getBytes().length+7);
         m.put(k, b);
     }
 
     public void put(String k, int i){
+        setByteSize(k.getBytes().length+String.valueOf(i).getBytes().length+2);
         m.put(k, i);
     }
 
     public void put(String k, long l){
+        setByteSize(k.getBytes().length+String.valueOf(l).getBytes().length+2);
         m.put(k, l);
     }
 
     public void put(String k, double d){
+        setByteSize(k.getBytes().length+String.valueOf(d).getBytes().length+2);
         m.put(k, d);
     }
 
-    public void put(String k, JsonVariable v){
-        m.put(k, v);
+    private void put(String k, JsonObject2 o){
+        setByteSize(k.getBytes().length+o.byteSize()+2);
+        o.setObserver(this);
+        m.put(k, o);
+    }
+
+    private void put(String k, JsonArray2 a){
+        setByteSize(k.getBytes().length+a.byteSize()+2);
+        a.setObserver(this);
+        m.put(k, a);
     }
 
     /*
@@ -114,14 +138,16 @@ public class JsonObject2 implements JsonVariable, JsonObserver {
                 v instanceof Boolean ||
                 v instanceof Integer ||
                 v instanceof Long ||
-                v instanceof Double){
+                v instanceof Double ||
+                v instanceof JsonObject2 ||
+                v instanceof JsonArray2){
             m.put(k, v);
 
         }else if(v instanceof List<?>){
-            m.put(k, new JsonArray2((List<Object>) v));
+            m.put(k, new JsonArray2((List<?>) v));
 
         }else if(v instanceof Map<?, ?>){
-            m.put(k, new JsonObject2((Map<String, Object>) v));
+            m.put(k, new JsonObject2((Map<?, ?>) v));
         }
     }
 /*
@@ -195,11 +221,11 @@ public class JsonObject2 implements JsonVariable, JsonObserver {
         return m.containsValue(new JsonBytes(b));
     }
 */
-    public boolean containsValue(List<Object> l){
+    public boolean containsValue(List<?> l){
         return m.containsValue(new JsonArray2(l));
     }
 
-    public boolean containsValue(Map<String, Object> m){
+    public boolean containsValue(Map<?, ?> m){
         return this.m.containsValue(new JsonObject2(m));
     }
 
@@ -252,7 +278,7 @@ public class JsonObject2 implements JsonVariable, JsonObserver {
     }
 
     @Override
-    public Map<String, ?> getObject(){
+    public Map<?, ?> getObject(){
         /*
         HashMap<String, Object> h = new HashMap<>();
         for(JsonBytes k : m.keySet()){
@@ -308,9 +334,8 @@ public class JsonObject2 implements JsonVariable, JsonObserver {
 
         return b+"}";
     }
-/*
+
     public byte[] encode(){
         return new Json().encode(this);
     }
-    */
 }

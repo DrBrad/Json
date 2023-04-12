@@ -37,11 +37,11 @@ public class JsonArray implements JsonVariable, JsonObserver {
     }
 
     public JsonArray(byte[] buf){
-        this(new Json().decodeArray(buf, 0));
+        //this(new Json().decodeArray(buf, 0));
     }
 
     public JsonArray(byte[] buf, int off){
-        this(new Json().decodeArray(buf, off));
+        //this(new Json().decodeArray(buf, off));
     }
 
     private void add(JsonVariable v){
@@ -389,8 +389,8 @@ public class JsonArray implements JsonVariable, JsonObserver {
 
         return b+"]";
     }
-
+/*
     public byte[] encode(){
         return new Json().encode(this);
-    }
+    }*/
 }

@@ -78,32 +78,32 @@ public class JsonReader {
             case 't':
                 in.skip(3);
                 read();
-                return new JsonBoolean(true);
+                return true;
 
             case 'T':
                 in.skip(3);
                 read();
-                return new JsonBoolean(true);
+                return true;
 
             case 'f':
                 in.skip(4);
                 read();
-                return new JsonBoolean(false);
+                return false;
 
             case 'F':
                 in.skip(4);
                 read();
-                return new JsonBoolean(false);
+                return false;
 
             case 'n':
                 in.skip(3);
                 read();
-                return new JsonNull();
+                return null;
 
             case 'N':
                 in.skip(3);
                 read();
-                return new JsonNull();
+                return null;
 
             case '{':
                 return getObject();

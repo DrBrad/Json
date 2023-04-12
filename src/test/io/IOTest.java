@@ -33,14 +33,12 @@ public class IOTest {
         //JsonWriter w = new JsonWriter(System.out);
         //w.write(json);
         //w.flush();
-/*
+
         System.out.println("\r\n\r\n");
 
         System.out.println("INPUT TEST");
         JsonReader r = new JsonReader(new ByteArrayInputStream(json.encode()));
-        JsonObject2 json1 = r.readJsonObject();*/
+        json = r.readJsonObject();
         System.out.println(json);
-
-        System.out.println(json.size());
     }
 }

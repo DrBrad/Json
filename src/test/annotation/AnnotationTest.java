@@ -2,14 +2,15 @@ package test.annotation;
 
 import unet.json.Json;
 import unet.json.variables.JsonObject;
+import unet.json.variables.JsonObject2;
 
 public class AnnotationTest {
 
     public static void main(String[] args)throws Exception {
         System.out.println("-= ANNOTATION TEST =-");
 
-        JsonObject json = new JsonObject();
-        JsonObject k = new JsonObject();
+        JsonObject2 json = new JsonObject2();
+        JsonObject2 k = new JsonObject2();
         k.put("$oid", "63e4624e17f6714b6207e3f0");
         json.put("id", k);
         //k.put("test", "asd");

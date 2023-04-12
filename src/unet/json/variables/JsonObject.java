@@ -48,11 +48,11 @@ public class JsonObject  implements JsonVariable, JsonObserver {
     }
 
     public JsonObject(byte[] buf){
-        this(new Json().decodeObject(buf, 0));
+        //this(new Json().decodeObject(buf, 0));
     }
 
     public JsonObject(byte[] buf, int off){
-        this(new Json().decodeObject(buf, off));
+        //this(new Json().decodeObject(buf, off));
     }
 
     private void put(JsonBytes k, JsonVariable v){
@@ -303,8 +303,8 @@ public class JsonObject  implements JsonVariable, JsonObserver {
 
         return b+"}";
     }
-
+/*
     public byte[] encode(){
         return new Json().encode(this);
-    }
+    }*/
 }
