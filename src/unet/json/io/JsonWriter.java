@@ -27,7 +27,7 @@ public class JsonWriter {
         out.write('{');
 
         int i = 0;
-        for(JsonBytes k : m.keySet()){
+        for(JsonString k : m.keySet()){
             write(k);
             out.write(':');
             write(m.valueOf(k));
@@ -49,8 +49,8 @@ public class JsonWriter {
     }
 
     private void write(JsonVariable v)throws IOException {
-        if(v instanceof JsonBytes){
-            write((JsonBytes) v);
+        if(v instanceof JsonString){
+            write((JsonString) v);
         }else if(v instanceof JsonNumber){
             write((JsonNumber) v);
         }else if(v instanceof JsonBoolean){
@@ -64,7 +64,7 @@ public class JsonWriter {
         }
     }
 
-    private void write(JsonBytes v)throws IOException {
+    private void write(JsonString v)throws IOException {
         out.write(v.getBytes());
     }
 

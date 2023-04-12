@@ -8,7 +8,7 @@ import java.util.*;
 
 public class JsonObject  implements JsonVariable, JsonObserver {
 
-    private HashMap<JsonBytes, JsonVariable> m = new HashMap<>();
+    private HashMap<JsonString, JsonVariable> m = new HashMap<>();
     private JsonObserver o;
     private int s = 2;
 
@@ -17,12 +17,12 @@ public class JsonObject  implements JsonVariable, JsonObserver {
 
     public JsonObject(Map<?, ?> m){
         for(Object o : m.keySet()){
-            JsonBytes k;
+            JsonString k;
 
-            if(o instanceof JsonBytes){
-                k = (JsonBytes) o;
+            if(o instanceof JsonString){
+                k = (JsonString) o;
             }else if(o instanceof String){
-                k = new JsonBytes(((String) o).getBytes());
+                k = new JsonString((String) o);
             }else{
                 throw new IllegalArgumentException("Map keys must be in byte, string, or bencodebyte form.");
             }
@@ -36,9 +36,7 @@ public class JsonObject  implements JsonVariable, JsonObserver {
             }else if(m.get(o) instanceof Boolean){
                 put(k, new JsonBoolean((Boolean) m.get(o)));
             }else if(m.get(o) instanceof String){
-                put(k, new JsonBytes(((String) m.get(o)).getBytes()));
-            }else if(m.get(o) instanceof byte[]){
-                put(k, new JsonBytes((byte[]) m.get(o)));
+                put(k, new JsonString((String) m.get(o)));
             }else if(m.get(o) instanceof List<?>){
                 put(k, new JsonArray((List<?>) m.get(o)));
             }else if(m.get(o) instanceof Map<?, ?>){
@@ -55,7 +53,7 @@ public class JsonObject  implements JsonVariable, JsonObserver {
         this(new Json().decodeObject(buf, off));
     }
 
-    private void put(JsonBytes k, JsonVariable v){
+    private void put(JsonString k, JsonVariable v){
         m.put(k, v);
         setByteSize(k.byteSize()+v.byteSize()+2);
 
@@ -67,19 +65,19 @@ public class JsonObject  implements JsonVariable, JsonObserver {
     }
 
     public void put(String k, boolean b){
-        put(new JsonBytes(k.getBytes()), new JsonBoolean(b));
+        put(new JsonString(k), new JsonBoolean(b));
     }
 
     public void put(String k, int i){
-        put(new JsonBytes(k.getBytes()), new JsonNumber(Integer.toString(i)));
+        put(new JsonString(k), new JsonNumber(Integer.toString(i)));
     }
 
     public void put(String k, long l){
-        put(new JsonBytes(k.getBytes()), new JsonNumber(Long.toString(l)));
+        put(new JsonString(k), new JsonNumber(Long.toString(l)));
     }
 
     public void put(String k, double d){
-        put(new JsonBytes(k.getBytes()), new JsonNumber(Double.toString(d)));
+        put(new JsonString(k), new JsonNumber(Double.toString(d)));
     }
 
     /*
@@ -96,87 +94,80 @@ public class JsonObject  implements JsonVariable, JsonObserver {
 
     public void put(String k, Object o){
         if(o == null){
-            put(new JsonBytes(k.getBytes()), new JsonNull());
+            put(new JsonString(k), new JsonNull());
 
         }else if(o instanceof String){
-            put(new JsonBytes(k.getBytes()), new JsonBytes(((String) o).getBytes()));
-
-        }else if(o instanceof byte[]){
-            put(new JsonBytes(k.getBytes()), new JsonBytes((byte[]) o));
+            put(new JsonString(k), new JsonString((String) o));
 
         }else if(o instanceof List<?>){
-            put(new JsonBytes(k.getBytes()), new JsonArray((List<?>) o));
+            put(new JsonString(k), new JsonArray((List<?>) o));
 
         }else if(o instanceof Map<?, ?>){
-            put(new JsonBytes(k.getBytes()), new JsonObject((Map<?, ?>) o));
+            put(new JsonString(k), new JsonObject((Map<?, ?>) o));
 
         }else if(o instanceof JsonVariable){
-            put(new JsonBytes(k.getBytes()), (JsonVariable) o);
+            put(new JsonString(k), (JsonVariable) o);
 
         }else if(o instanceof Boolean){
-            put(new JsonBytes(k.getBytes()), new JsonBoolean((Boolean) o));
+            put(new JsonString(k), new JsonBoolean((Boolean) o));
 
         }else if(o instanceof Integer){
-            put(new JsonBytes(k.getBytes()), new JsonNumber(Integer.toString((Integer) o)));
+            put(new JsonString(k), new JsonNumber(Integer.toString((Integer) o)));
 
         }else if(o instanceof Long){
-            put(new JsonBytes(k.getBytes()), new JsonNumber(Long.toString((Long) o)));
+            put(new JsonString(k), new JsonNumber(Long.toString((Long) o)));
 
         }else if(o instanceof Double){
-            put(new JsonBytes(k.getBytes()), new JsonNumber(Double.toString((Double) o)));
+            put(new JsonString(k), new JsonNumber(Double.toString((Double) o)));
         }
     }
 
-    public JsonVariable valueOf(JsonBytes k){
+    public JsonVariable valueOf(JsonString k){
         return m.get(k);
     }
 
     public Object get(String k){
-        return m.get(new JsonBytes(k.getBytes())).getObject();
+        return m.get(new JsonString(k)).getObject();
     }
 
     public Integer getInteger(String k){
-        return ((Number) m.get(new JsonBytes(k.getBytes())).getObject()).intValue();
+        return ((Number) m.get(new JsonString(k)).getObject()).intValue();
     }
 
     public Long getLong(String k){
-        return ((Number) m.get(new JsonBytes(k.getBytes())).getObject()).longValue();
+        return ((Number) m.get(new JsonString(k)).getObject()).longValue();
     }
 
     public Short getShort(String k){
-        return ((Number) m.get(new JsonBytes(k.getBytes())).getObject()).shortValue();
+        return ((Number) m.get(new JsonString(k)).getObject()).shortValue();
     }
 
     public Double getDouble(String k){
-        return ((Number) m.get(new JsonBytes(k.getBytes())).getObject()).doubleValue();
+        return ((Number) m.get(new JsonString(k)).getObject()).doubleValue();
     }
 
     public Float getFloat(String k){
-        return ((Number) m.get(new JsonBytes(k.getBytes())).getObject()).floatValue();
+        return ((Number) m.get(new JsonString(k)).getObject()).floatValue();
     }
 
     public Boolean getBoolean(String k){
-        return ((Boolean) m.get(new JsonBytes(k.getBytes())).getObject()).booleanValue();
+        return ((Boolean) m.get(new JsonString(k)).getObject()).booleanValue();
     }
 
     public String getString(String k){
-        return new String((byte[]) m.get(new JsonBytes(k.getBytes())).getObject());
-    }
-
-    public byte[] getBytes(String k){
-        return (byte[]) m.get(new JsonBytes(k.getBytes())).getObject();
+        return (String) m.get(new JsonString(k)).getObject();
     }
 
     public JsonArray getJsonArray(String k){
-        return (JsonArray) m.get(new JsonBytes(k.getBytes()));
+        return (JsonArray) m.get(new JsonString(k));
     }
 
     public JsonObject getJsonObject(String k){
-        return (JsonObject) m.get(new JsonBytes(k.getBytes()));
+        return (JsonObject) m.get(new JsonString(k));
     }
 
-    public boolean containsKey(String s){
-        return m.containsKey(new JsonBytes(s.getBytes()));
+    public boolean containsKey(String k){
+        return m.containsKey(new JsonString(k));
     }
 
     public boolean containsValue(Number n){
@@ -188,11 +179,7 @@ public class JsonObject  implements JsonVariable, JsonObserver {
     }
 
     public boolean containsValue(String s){
-        return m.containsValue(new JsonBytes(s.getBytes()));
-    }
-
-    public boolean containsValue(byte[] b){
-        return m.containsValue(new JsonBytes(b));
+        return m.containsValue(new JsonString(s));
     }
 
     public boolean containsValue(List<?> l){
@@ -212,14 +199,14 @@ public class JsonObject  implements JsonVariable, JsonObserver {
     }
 
     public void remove(String k){
-        JsonBytes b = new JsonBytes(k.getBytes());
+        JsonString b = new JsonString(k);
         if(m.containsKey(b)){
             setByteSize(-b.byteSize()-m.get(b).byteSize());
             m.remove(b);
         }
     }
 
-    public Set<JsonBytes> keySet(){
+    public Set<JsonString> keySet(){
         return m.keySet();
     }
 
@@ -253,7 +240,7 @@ public class JsonObject  implements JsonVariable, JsonObserver {
     @Override
     public Map<String, ?> getObject(){
         HashMap<String, Object> h = new HashMap<>();
-        for(JsonBytes k : m.keySet()){
+        for(JsonString k : m.keySet()){
             h.put(new String(k.getObject()), m.get(k).getObject());
         }
         return h;
@@ -273,7 +260,7 @@ public class JsonObject  implements JsonVariable, JsonObserver {
     public String toString(){
         StringBuilder b = new StringBuilder("{\r\n");
 
-        for(JsonBytes o : m.keySet()){
+        for(JsonString o : m.keySet()){
             String k = new String(o.getObject());
 
             if(m.get(o) instanceof JsonNumber){
@@ -285,13 +272,8 @@ public class JsonObject  implements JsonVariable, JsonObserver {
             }else if(m.get(o) instanceof JsonNull){
                 b.append("\t\033[0;31m"+k+"\033[0m:\033[0;36m"+m.get(o).getObject()+"\033[0m\r\n");
 
-            }else if(m.get(o) instanceof JsonBytes){
-                if(Charset.forName("US-ASCII").newEncoder().canEncode(new String(((JsonBytes) m.get(o)).getObject()))){
-                    b.append("\t\033[0;31m"+k+"\033[0m:\033[0;34m"+new String(((JsonBytes) m.get(o)).getObject(), StandardCharsets.UTF_8)+"\033[0m\r\n");
-
-                }else{
-                    b.append("\t\033[0;31m"+k+"\033[0m:\033[0;34m BASE64 { "+Base64.getEncoder().encodeToString(((JsonBytes) m.get(o)).getObject())+" }\033[0m\r\n");
-                }
+            }else if(m.get(o) instanceof JsonString){
+                b.append("\t\033[0;31m"+k+"\033[0m:\033[0;34m"+m.get(o).getObject()+"\033[0m\r\n");
 
             }else if(m.get(o) instanceof JsonArray){
                 b.append("\t\033[0;32m"+k+"\033[0m:"+((JsonArray) m.get(o)).toString().replaceAll("\\r?\\n", "\r\n\t")+"\r\n");

@@ -4,8 +4,6 @@ import unet.json.variables.*;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +21,8 @@ public class Json {
     //Annotation Input Stream to/from i/o
     //Annotation to/from bytes
     //WE SHOULD BE USING HASH-CODES NOT INSTANCES...
+    //HANDLE NUMBERS/BOOLEANS/NULL BETTER...
+    //BETTER NUMBER PARSING...
 
     public byte[] encode(JsonArray l){
         buf = new byte[l.byteSize()];
@@ -47,12 +47,12 @@ public class Json {
                 if(j.containsKey(k)){
                     field.setAccessible(true);
 
-                    JsonVariable v = j.valueOf(new JsonBytes(k.getBytes()));
+                    JsonVariable v = j.valueOf(new JsonString(k));
 
                     switch(v.hashCode()){
                         case 0: //STRING
                             if(String.class.isAssignableFrom(field.getType())){
-                                field.set(i, new String(((JsonBytes) v).getObject()));
+                                field.set(i, ((JsonString) v).getObject());
                             }else if(field.getType().equals(byte[].class)){
                                 field.set(i, v.getObject());
                             }
@@ -245,15 +245,15 @@ public class Json {
         return getArray();
     }
 
-    public Map<JsonBytes, JsonVariable> decodeObject(byte[] buf, int off){
+    public Map<JsonString, JsonVariable> decodeObject(byte[] buf, int off){
         this.buf = buf;
         pos = off;
         return getObject();
     }
 
     private void put(JsonVariable v){
-        if(v instanceof JsonBytes){
-            put((JsonBytes) v);
+        if(v instanceof JsonString){
+            put((JsonString) v);
         }else if(v instanceof JsonNumber){
             put((JsonNumber) v);
         }else if(v instanceof JsonBoolean){
@@ -268,7 +268,7 @@ public class Json {
     }
 
     //THIS SEEMS REDUNDANT....
-    private void put(JsonBytes v){
+    private void put(JsonString v){
         byte[] b = v.getBytes();
         System.arraycopy(b, 0, buf, pos, b.length);
         pos += b.length;
@@ -311,7 +311,7 @@ public class Json {
         pos++;
 
         int i = 0;
-        for(JsonBytes k : m.keySet()){
+        for(JsonString k : m.keySet()){
             put(k);
             buf[pos] = ':';
             pos++;
@@ -354,7 +354,7 @@ public class Json {
 
         switch(buf[pos]){
             case '"':
-                return getBytes();
+                return getString();
 
             case 't':
                 return getBoolean(true);
@@ -417,7 +417,7 @@ public class Json {
         return new JsonNumber(new String(b));
     }
 
-    private JsonBytes getBytes(){
+    private JsonString getString(){
         pos++;
 
         int s = pos;
@@ -431,7 +431,7 @@ public class Json {
         pos++;
         trim();
 
-        return new JsonBytes(b);
+        return new JsonString(b);
     }
 
 
@@ -452,16 +452,16 @@ public class Json {
         return null;
     }
 
-    private Map<JsonBytes, JsonVariable> getObject(){
+    private Map<JsonString, JsonVariable> getObject(){
         trim();
 
         if(buf[pos] == '{'){
-            HashMap<JsonBytes, JsonVariable> m = new HashMap<>();
+            HashMap<JsonString, JsonVariable> m = new HashMap<>();
             pos++;
 
             while(buf[pos] != '}'){
                 trim();
-                m.put(getBytes(), get());
+                m.put(getString(), get());
             }
             pos++;
             return m;

@@ -1,17 +1,20 @@
 package unet.json.variables;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
-public class JsonBytes implements JsonVariable {
+public class JsonString implements JsonVariable {
 
     private byte[] b;
     private int s;
 
-    public JsonBytes(byte[] b){
+    public JsonString(byte[] b){
         this.b = b;//sanitize(b);
         s = this.b.length+2;
+    }
+
+    public JsonString(String s){
+        b = s.getBytes();//sanitize(b);
+        this.s = b.length+2;
     }
 
     /*
@@ -45,6 +48,7 @@ public class JsonBytes implements JsonVariable {
         return r;
     }
     */
+
     public byte[] getBytes(){
         byte[] r = new byte[s];
         r[0] = '"';
@@ -54,8 +58,8 @@ public class JsonBytes implements JsonVariable {
     }
 
     @Override
-    public byte[] getObject(){
-        return b;
+    public String getObject(){
+        return new String(b);
     }
 
     @Override
@@ -65,8 +69,8 @@ public class JsonBytes implements JsonVariable {
 
     @Override
     public boolean equals(Object o){
-        if(o instanceof JsonBytes){
-            return Arrays.equals(getBytes(), ((JsonBytes) o).getBytes());
+        if(o instanceof JsonString){
+            return Arrays.equals(b, ((JsonString) o).b);
         }
         return false;
     }

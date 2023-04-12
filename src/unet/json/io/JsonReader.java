@@ -71,7 +71,7 @@ public class JsonReader {
         //byte b = (byte) in.read();
         switch(peek()){
             case '"':
-                return getBytes();
+                return getString();
 
             case 't':
                 in.skip(3);
@@ -118,11 +118,11 @@ public class JsonReader {
         return null;
     }
 
-    private Map<JsonBytes, JsonVariable> getObject()throws IOException {
-        Map<JsonBytes, JsonVariable> m = new HashMap<>();
+    private Map<JsonString, JsonVariable> getObject()throws IOException {
+        Map<JsonString, JsonVariable> m = new HashMap<>();
         while(peek() != '}'){
             read();
-            JsonBytes k = getBytes();
+            JsonString k = getString();
             read();
             m.put(k, get());
         }
@@ -144,7 +144,7 @@ public class JsonReader {
         return l;
     }
 
-    private JsonBytes getBytes()throws IOException {
+    private JsonString getString()throws IOException {
         read();
 
         byte[] buf = new byte[1024];
@@ -165,10 +165,10 @@ public class JsonReader {
         if(i < buf.length){
             byte[] r = new byte[i];
             System.arraycopy(buf, 0, r, 0, i);
-            return new JsonBytes(r);
+            return new JsonString(r);
         }
 
-        return new JsonBytes(buf);
+        return new JsonString(buf);
     }
 
     private JsonNumber getNumber()throws IOException {

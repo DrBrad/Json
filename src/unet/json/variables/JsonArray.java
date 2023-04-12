@@ -25,9 +25,7 @@ public class JsonArray implements JsonVariable, JsonObserver {
             }else if(v instanceof Number){
                 add(new JsonNumber(v.toString()));
             }else if(v instanceof String){
-                add(new JsonBytes(((String) v).getBytes()));
-            }else if(v instanceof byte[]){
-                add(new JsonBytes((byte[]) v));
+                add(new JsonString((String) v));
             }else if(v instanceof List<?>){
                 add(new JsonArray((List<?>) v));
             }else if(v instanceof Map<?, ?>){
@@ -90,10 +88,7 @@ public class JsonArray implements JsonVariable, JsonObserver {
             add(new JsonNull());
 
         }else if(o instanceof String){
-            add(new JsonBytes(((String) o).getBytes()));
-
-        }else if(o instanceof byte[]){
-            add(new JsonBytes((byte[]) o));
+            add(new JsonString((String) o));
 
         }else if(o instanceof List<?>){
             add(new JsonArray((List<?>) o));
@@ -164,10 +159,7 @@ public class JsonArray implements JsonVariable, JsonObserver {
             set(i, new JsonNull());
 
         }else if(o instanceof String){
-            set(i, new JsonBytes(((String) o).getBytes()));
-
-        }else if(o instanceof byte[]){
-            set(i, new JsonBytes((byte[]) o));
+            set(i, new JsonString((String) o));
 
         }else if(o instanceof List<?>){
             set(i, new JsonArray((List<?>) o));
@@ -225,11 +217,7 @@ public class JsonArray implements JsonVariable, JsonObserver {
     }
 
     public String getString(int i){
-        return new String((byte[]) l.get(i).getObject());
-    }
-
-    public byte[] getBytes(int i){
-        return (byte[]) l.get(i).getObject();
+        return (String) l.get(i).getObject();
     }
 
     public JsonArray getJsonArray(int i){
@@ -249,11 +237,7 @@ public class JsonArray implements JsonVariable, JsonObserver {
     }
 
     public boolean contains(String s){
-        return l.contains(new JsonBytes(s.getBytes()));
-    }
-
-    public boolean contains(byte[] b){
-        return l.contains(new JsonBytes(b));
+        return l.contains(new JsonString(s));
     }
 
     public boolean contains(List<?> l){
@@ -283,12 +267,8 @@ public class JsonArray implements JsonVariable, JsonObserver {
         remove(new JsonNumber(n.toString()));
     }
 
-    public void remove(byte[] b){
-        remove(new JsonBytes(b));
-    }
-
     public void remove(String s){
-        remove(new JsonBytes(s.getBytes()));
+        remove(new JsonString(s));
     }
 
     private int indexOf(JsonVariable v){
@@ -302,12 +282,8 @@ public class JsonArray implements JsonVariable, JsonObserver {
         return indexOf(new JsonNumber(n.toString()));
     }
 
-    public int indexOf(byte[] b){
-        return indexOf(new JsonBytes(b));
-    }
-
     public int indexOf(String s){
-        return indexOf(new JsonBytes(s.getBytes()));
+        return indexOf(new JsonString(s));
     }
 
     public int size(){
@@ -371,13 +347,8 @@ public class JsonArray implements JsonVariable, JsonObserver {
             }else if(v instanceof JsonNull){
                 b.append("\t\033[0;36m"+v.getObject()+"\033[0m\r\n");
 
-            }else if(v instanceof JsonBytes){
-                if(Charset.forName("US-ASCII").newEncoder().canEncode(new String((byte[]) v.getObject()))){
-                    b.append("\t\033[0;34m"+new String((byte[]) v.getObject(), StandardCharsets.UTF_8)+"\033[0m\r\n");
-
-                }else{
-                    b.append("\t\033[0;34mBASE64 { "+Base64.getEncoder().encodeToString((byte[]) v.getObject())+" }\033[0m\r\n");
-                }
+            }else if(v instanceof JsonString){
+                b.append("\t\033[0;34m"+v.getObject()+"\033[0m\r\n");
 
             }else if(v instanceof JsonArray){
                 b.append("\t\033[0m"+v.toString().replaceAll("\\r?\\n", "\r\n\t")+"\r\n");
