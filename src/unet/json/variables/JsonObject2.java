@@ -66,11 +66,13 @@ public class JsonObject2 implements JsonVariable, JsonObserver {
     }
 
     public JsonObject2(byte[] buf){
-        this(new Json().decodeObject(buf, 0));
+        new Json().decodeObject(this, buf, 0);
+        //this(new Json().decodeObject(buf, 0));
     }
 
     public JsonObject2(byte[] buf, int off){
-        this(new Json().decodeObject(buf, off));
+        new Json().decodeObject(this, buf, off);
+        //this(new Json().decodeObject(buf, off));
     }
 /*
     private void put(String k, Object v){
@@ -85,34 +87,34 @@ public class JsonObject2 implements JsonVariable, JsonObserver {
     }
 */
     public void put(String k, boolean b){
-        setByteSize(k.getBytes().length+String.valueOf(b).getBytes().length+2);
+        setByteSize(k.getBytes().length+String.valueOf(b).getBytes().length+4);
         //setByteSize((b) ? k.getBytes().length+6 : k.getBytes().length+7);
         m.put(k, b);
     }
 
     public void put(String k, int i){
-        setByteSize(k.getBytes().length+String.valueOf(i).getBytes().length+2);
+        setByteSize(k.getBytes().length+String.valueOf(i).getBytes().length+4);
         m.put(k, i);
     }
 
     public void put(String k, long l){
-        setByteSize(k.getBytes().length+String.valueOf(l).getBytes().length+2);
+        setByteSize(k.getBytes().length+String.valueOf(l).getBytes().length+4);
         m.put(k, l);
     }
 
     public void put(String k, double d){
-        setByteSize(k.getBytes().length+String.valueOf(d).getBytes().length+2);
+        setByteSize(k.getBytes().length+String.valueOf(d).getBytes().length+4);
         m.put(k, d);
     }
 
     private void put(String k, JsonObject2 o){
-        setByteSize(k.getBytes().length+o.byteSize()+2);
+        setByteSize(k.getBytes().length+o.byteSize()+4);
         o.setObserver(this);
         m.put(k, o);
     }
 
     private void put(String k, JsonArray2 a){
-        setByteSize(k.getBytes().length+a.byteSize()+2);
+        setByteSize(k.getBytes().length+a.byteSize()+4);
         a.setObserver(this);
         m.put(k, a);
     }
@@ -131,10 +133,13 @@ public class JsonObject2 implements JsonVariable, JsonObserver {
 
     public void put(String k, Object v){
         if(v == null ||
-                v instanceof String ||
                 v instanceof Boolean ||
                 v instanceof Number){
-            setByteSize(k.getBytes().length+String.valueOf(v).getBytes().length+2);
+            setByteSize(k.getBytes().length+String.valueOf(v).getBytes().length+4);
+            m.put(k, v);
+
+        }else if(v instanceof String){
+            setByteSize(k.getBytes().length+((String)v).getBytes().length+6);
             m.put(k, v);
 
         }else if(v instanceof List<?>){

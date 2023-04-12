@@ -42,10 +42,12 @@ public class JsonArray2 implements JsonVariable, JsonObserver {
     }
 
     public JsonArray2(byte[] buf){
+        new Json().decodeArray(this, buf, 0);
         //this(new Json().decodeArray(buf, 0));
     }
 
     public JsonArray2(byte[] buf, int off){
+        new Json().decodeArray(this, buf, off);
         //this(new Json().decodeArray(buf, off));
     }
 
@@ -115,14 +117,15 @@ public class JsonArray2 implements JsonVariable, JsonObserver {
 
     public void add(Object v){
         if(v == null ||
-                v instanceof String ||
                 v instanceof Boolean ||
                 v instanceof Integer ||
                 v instanceof Long ||
-                v instanceof Double ||
-                v instanceof JsonObject2 ||
-                v instanceof JsonArray2){
+                v instanceof Double){
             setByteSize(String.valueOf(v).getBytes().length+1);
+            l.add(v);
+
+        }else if(v instanceof String){
+            setByteSize(((String)v).getBytes().length+3);
             l.add(v);
 
         }else if(v instanceof List<?>){

@@ -242,19 +242,66 @@ public class Json {
         return j;
     }
 
-
+/*
     public JsonArray2 decodeArray(byte[] buf, int off){
         this.buf = buf;
         pos = off;
         return getArray();
     }
+*/
+    public void decodeArray(JsonArray2 j, byte[] buf, int off){
+        this.buf = buf;
+        pos = off;
+        trim();
 
+        if(buf[pos] == '['){
+            pos++;
+
+            while(buf[pos] != ']'){
+                trim();
+                try{
+                    j.add(get());
+                }catch(ParseException e){
+                }
+            }
+            pos++;
+        //}else{
+            //FAILED TO PARSE....
+            //throw new
+        }
+    }
+
+    public void decodeObject(JsonObject2 j, byte[] buf, int off){
+        this.buf = buf;
+        pos = off;
+        trim();
+
+        if(buf[pos] == '{'){
+            //JsonObject2 j = new JsonObject2();
+            pos++;
+
+            while(buf[pos] != '}'){
+                trim();
+                //try{
+                    System.out.println("K"+getString());
+                    break;
+                //    j.put(getString(), get());
+                //}catch(ParseException e){
+                //}
+            }
+            pos++;
+        //}else{
+            //FAILED TO PARSE....
+            //throw new
+        }
+    }
+    /*
     public JsonObject2 decodeObject(byte[] buf, int off){
         this.buf = buf;
         pos = off;
         return getObject();
     }
-
+*/
     private void put(Object v){
         if(v instanceof String){
             put((String) v);
@@ -296,8 +343,10 @@ public class Json {
     //THIS SEEMS REDUNDANT....
     private void put(String v){
         byte[] b = v.getBytes();
-        System.arraycopy(b, 0, buf, pos, b.length);
-        pos += b.length;
+        buf[pos] = '"';
+        System.arraycopy(b, 0, buf, pos+1, b.length);
+        pos += b.length+2;
+        buf[pos-1] = '"';
     }
 
     private void put(Number n){
@@ -405,10 +454,10 @@ public class Json {
             case 'F':
                 return false;//getBoolean(false);
 
-            case 'n':
+            case 'n': //CAN WE JUST SKIP SOME-HOW??? - DEFAULT
                 return null;//getNull();
 
-            case 'N':
+            case 'N': //CAN WE JUST SKIP SOME-HOW??? - DEFAULT
                 return null;//getNull();
 
             case '{':
