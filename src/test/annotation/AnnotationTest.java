@@ -9,9 +9,9 @@ public class AnnotationTest {
         System.out.println("-= ANNOTATION TEST =-");
 
         JsonObject json = new JsonObject();
-        //JsonObject k = new JsonObject();
-        //k.put("$oid", "63e4624e17f6714b6207e3f0");
-        //json.put("id", k);
+        JsonObject k = new JsonObject();
+        k.put("$oid", "63e4624e17f6714b6207e3f0");
+        json.put("id", k);
         //k.put("test", "asd");
         json.put("title", "Earth to Echo");
         json.put("description", "After a construction project begins in their neighborhood, best friends Tuck (Brian \"Astro\" Bradley), Alex (Teo Halm) and Munch (Reese C. Hartwig) begin receiving strange, encoded messages on their cell phones. They immediately inform their parents and the authorities, but when no one takes them seriously, the youths decide to crack the code themselves and trace the messages to their source. The youths' curiosity leads them to a robotic extraterrestrial who desperately needs their help.");
@@ -28,6 +28,7 @@ public class AnnotationTest {
         //SERIALIZE TEST
         Movie2 m = (Movie2) Json.fromJson(Movie2.class, json);
 
+        System.out.println(m.getId().getId());
         System.out.println(m.getTitle());
         System.out.println(m.getDescription());
         System.out.println(m.getRating());
@@ -38,7 +39,7 @@ public class AnnotationTest {
         System.out.println(m.getPortrait());
         System.out.println(m.getLandscape());
         System.out.println(m.getBoolTest());
-        System.out.println(m.getNullTest());
+        //System.out.println(m.getNullTest());
 
         //DESERIALIZE TEST
         json = Json.toJson(m);

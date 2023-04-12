@@ -5,6 +5,7 @@ import unet.json.variables.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,9 +19,10 @@ public class Json {
     //SERIALIZE JSON - PRETTY AND NOT
     //REMOVE OBSERVER IF SET OR PUT
     //FINISH SANITIZATION...
-    //Annotation object/arrays within object...
+    //Annotation object/arrays within object... - SHOULD ALLOW SUB CLASSES...
     //Annotation Input Stream to/from i/o
     //Annotation to/from bytes
+    //WE SHOULD BE USING HASH-CODES NOT INSTANCES...
 
     public byte[] encode(JsonArray l){
         buf = new byte[l.byteSize()];
@@ -34,7 +36,7 @@ public class Json {
         return buf;
     }
 
-    public static Object fromJson(Class c, JsonObject j)throws ReflectiveOperationException {
+    public static Object fromJson(Class<?> c, JsonObject j)throws ReflectiveOperationException {
         Constructor<?> constructor = c.getDeclaredConstructor();
         Object i = constructor.newInstance();
 
@@ -45,34 +47,108 @@ public class Json {
                 if(j.containsKey(k)){
                     field.setAccessible(true);
 
+                    JsonVariable v = j.valueOf(new JsonBytes(k.getBytes()));
+
+                    switch(v.hashCode()){
+                        case 0: //STRING
+                            if(String.class.isAssignableFrom(field.getType())){
+                                field.set(i, new String(((JsonBytes) v).getObject()));
+                            }
+                            break;
+
+                        case 1: //NUMBER
+                            if(field.getType().equals(int.class)){
+                                field.set(i, ((Integer) v.getObject()).doubleValue());
+
+                            }else if(field.getType().equals(long.class)){
+                            //}else if(Long.class.isAssignableFrom(method.getParameterTypes()[0])){
+                                field.set(i, ((Long) v.getObject()).longValue());
+
+                            }else if(field.getType().equals(double.class)){
+                            //}else if(Double.class.isAssignableFrom(method.getParameterTypes()[0])){
+                                field.set(i, ((Double) v.getObject()).doubleValue());
+                            }
+                            break;
+
+                        case 2: //ARRAY
+                            if(List.class.isAssignableFrom(field.getType())){
+                                field.set(i, v.getObject());
+                            }
+                            break;
+
+                        case 3: //OBJECT
+                            if(Map.class.isAssignableFrom(field.getType())){
+                                field.set(i, v.getObject());
+
+                            }else{
+                                field.set(i, fromJson(field.getType(), (JsonObject) v));
+                            }
+                            break;
+
+                        case 4: //BOOLEAN
+                            if(field.getType().equals(boolean.class)){
+                                field.set(i, v.getObject());
+                            }
+                            break;
+
+                        case 5: //NULL
+                            field.set(i, null);
+                            break;
+                    }
+
+                    /*
+                    BYTES = 0
+                    NUMBER = 1
+                    ARRAY = 2
+                    OBJECT = 3
+                    BOOLEAN = 4
+                    NULL = 5
+                    */
+
+                    //System.err.println(v.);
+                    //if(v instanceof String){
+                        //System.err.println("STRING  "+v);
+                    //}
+                    /*
                     if(String.class.isAssignableFrom(field.getType())){
                         field.set(i, j.getString(k));
 
-                    }else if(field.getType() == int.class){
+                    }else if(field.getType().equals(int.class)){
                         field.set(i, j.getInteger(k));
 
-                    }else if(field.getType() == long.class){
+                    }else if(field.getType().equals(long.class)){
                         //}else if(Long.class.isAssignableFrom(method.getParameterTypes()[0])){
                         field.set(i, j.getLong(k));
 
-                    }else if(field.getType() == double.class){
+                    }else if(field.getType().equals(double.class)){
                         //}else if(Double.class.isAssignableFrom(method.getParameterTypes()[0])){
                         field.set(i, j.getDouble(k));
 
-                    }else if(field.getType() == byte.class){
+                    }else if(field.getType().equals(byte.class)){
                         //}else if(Byte.class.isAssignableFrom(method.getParameterTypes()[0])){
                         field.set(i, j.getBytes(k));
 
-                    }else if(field.getType() == boolean.class){
+                    }else if(field.getType().equals(boolean.class)){
                         //}else if(Boolean.class.isAssignableFrom(method.getParameterTypes()[0])){
                         field.set(i, j.getBoolean(k));
 
                     }else if(List.class.isAssignableFrom(field.getType())){
-                        field.set(i, j.getJsonArray(k));
+                        field.set(i, j.getJsonArray(k).getObject());
 
-                    }else if(Map.class.isAssignableFrom(field.getType())){
-                        field.set(i, j.getJsonObject(k));
+                    }else{// if(Map.class.isAssignableFrom(field.getType())){
+
+                        //System.out.println(field.getType()+"  "+field.getGenericType().getClass());
+
+                        //ParameterizedType listType = (ParameterizedType) field.getType();
+                        //Class<?> cl = Class.forName(field.getType().getActualTypeArguments()[0].getTypeName());
+
+                        //Class<?> fieldType = field.getType();
+                        //System.out.println(field.getType().equals(Object.class)+"  "+Object.class.isAssignableFrom(field.getType()));
+
+                        //field.set(i, fromJson(field.getType(), j.getJsonObject(k)));
+                        //field.set(i, j.getJsonObject(k).getObject());
                     }
+                    */
                 }
             }
         }

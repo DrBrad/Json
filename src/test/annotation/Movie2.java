@@ -2,6 +2,9 @@ package test.annotation;
 
 import unet.json.variables.JsonExpose;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Movie2 {
 
     @JsonExpose
@@ -15,6 +18,14 @@ public class Movie2 {
 
     @JsonExpose
     private Object nullTest;
+
+    @JsonExpose
+    private MongoID id;
+    //private Map<String, String> id = new HashMap<>();
+
+    public MongoID getId(){
+        return id;
+    }
 
     public String getTitle(){
         return title;
@@ -55,8 +66,18 @@ public class Movie2 {
     public boolean getBoolTest(){
         return boolTest;
     }
-
+/*
     public Object getNullTest(){
         return nullTest;
+    }
+*/
+    public static class MongoID {
+
+        @JsonExpose
+        private String $oid;
+
+        public String getId(){
+            return $oid;
+        }
     }
 }
