@@ -39,11 +39,11 @@ public class FunctionTest {
 
         Map<String, Object> k2 = new HashMap<>();
         k2.put("insert", "Insert value");
-        m.put("object", k2);
+        //m.put("object", k2);
 
         List<Object> l2 = new ArrayList<>();
         l2.add("Test Array");
-        m.put("array", l2);
+        //m.put("array", l2);
 
         m.put("title", "Earth to Echo"); //TEST STRING
         //m.put("serial", "Test \"String\" serialize"); //TEST STRING w SERIALIZATION

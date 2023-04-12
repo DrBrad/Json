@@ -282,12 +282,12 @@ public class Json {
 
             while(buf[pos] != '}'){
                 trim();
-                //try{
-                    System.out.println("K"+getString());
-                    break;
-                //    j.put(getString(), get());
-                //}catch(ParseException e){
-                //}
+                try{
+                    String k = getString();
+                    System.out.println(k);
+                    j.put(k, get());
+                }catch(ParseException e){
+                }
             }
             pos++;
         //}else{
@@ -555,7 +555,7 @@ public class Json {
         byte[] b = new byte[pos-s];
         System.arraycopy(buf, s, b, 0, b.length);
 
-        pos++;
+        //pos++;
         trim();
 
         return new String(b);
