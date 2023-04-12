@@ -23,11 +23,19 @@ public class AnnotationTest {
         json.put("portrait", "2a3bbd82940dad5e4d950c156e0aef090297d638225243ca7295dee6b53290d2");
         json.put("landscape", "9ea45ba00f32dce67e70ed712cac466158c0ce1c3c51a70f828c1eebb4de0230");
         json.put("boolTest", true);
-        json.put("nullTest", null);
+        //json.put("nullTest", null);
 
         //SERIALIZE TEST
         Movie2 m = (Movie2) Json.fromJson(Movie2.class, json);
 
+        //WHY CANT WE GET THE ID...
+        /*
+        for(Object z : m.getId().keySet()){
+            System.out.println("MAP: "+z+" = "+m.getId().get(z));
+        }
+        */
+
+        //System.out.println(m.getId().get("$oid"));//.getId());
         System.out.println(m.getId().getId());
         System.out.println(m.getTitle());
         System.out.println(m.getDescription());

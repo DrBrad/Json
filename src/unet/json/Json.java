@@ -53,6 +53,8 @@ public class Json {
                         case 0: //STRING
                             if(String.class.isAssignableFrom(field.getType())){
                                 field.set(i, new String(((JsonBytes) v).getObject()));
+                            }else if(field.getType().equals(byte[].class)){
+                                field.set(i, v.getObject());
                             }
                             break;
 
@@ -217,7 +219,19 @@ public class Json {
         for(Field field : o.getClass().getDeclaredFields()){
             if(field.isAnnotationPresent(JsonExpose.class) && field.getAnnotation(JsonExpose.class).serialize()){
                 field.setAccessible(true);
-                j.put(field.getName(), field.get(o));
+
+                if(field.getType().isPrimitive() ||
+                        field.getType() == Object.class ||
+                        String.class.isAssignableFrom(field.getType()) ||
+                        List.class.isAssignableFrom(field.getType()) ||
+                        Map.class.isAssignableFrom(field.getType())){
+
+                    j.put(field.getName(), field.get(o));
+
+                }else{
+                    j.put(field.getName(), toJson(field.get(o)));
+                }
+
             }
         }
 

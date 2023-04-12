@@ -23,6 +23,7 @@ public class Movie2 {
     private MongoID id;
     //private Map<String, String> id = new HashMap<>();
 
+    //public Map<String, String> getId(){
     public MongoID getId(){
         return id;
     }
