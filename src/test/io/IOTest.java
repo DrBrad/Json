@@ -21,7 +21,7 @@ public class IOTest {
 
         JsonObject k = new JsonObject();
         k.put("insert", "Insert value");
-        //json.put("object", k); //TEST LAYERED PUT
+        json.put("object", k); //TEST LAYERED PUT
 /*
         JsonArray l = new JsonArray();
         l.add("Test Array");
@@ -29,7 +29,7 @@ public class IOTest {
 */
         json.put("title", "Earth to Echo"); //TEST STRING
         json.put("zzz", "asdasd"); //TEST STRING
-        //json.put("coming", 1680303600); //TEST INT
+        json.put("coming", 1680303600); //TEST INT
         //json.put("boolTest", true); //TEST BOOLEAN
         //json.put("nullTest", null); //TEST NULL
 

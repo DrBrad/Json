@@ -58,7 +58,7 @@ public class JsonReader {
         return p;
     }
 
-    private byte sneak(){
+    private byte peek(){
         return n;
     }
 
@@ -97,15 +97,20 @@ public class JsonReader {
 
 
         Map<JsonBytes, JsonVariable> m = new HashMap<>();
-        while(read() != '}'){
+        while(peek() != '}'){
 
             read();
             JsonBytes k = getBytes();
-            System.out.println("ZZZ:  "+new String(k.getObject()));
-            System.out.println((char) sneak());
+            read();
+            //JsonBytes v = (JsonBytes) get();
+            //System.out.println("ZZZ:  "+new String(k.getObject())+" = "+new String(v.getObject()));
 
-            break;
+            m.put(k, get());
+
+            //break;
         }
+
+        read();
 
         /*
         do{
@@ -245,7 +250,7 @@ public class JsonReader {
         //System.out.println((char)(buf[pos]));
 
         //byte b = (byte) in.read();
-        switch(in.read()){
+        switch(peek()){
             case '"':
                 return getBytes();
 
@@ -281,8 +286,8 @@ public class JsonReader {
                 //return getList();
 
             default:
-                if(isNumber(sneak())){
-                    //return getNumber();
+                if(isNumber(peek())){
+                    return getNumber();
                 }
         }
 
@@ -290,11 +295,14 @@ public class JsonReader {
     }
 
     private JsonBytes getBytes()throws IOException {
+        read();
+
         byte[] buf = new byte[1024];
         int i = 0;
-        byte b;
-        while((b = read()) != '"'){
-            buf[i] = b;
+        //byte b;
+        while(peek() != '"'){
+        //while((b = read()) != '"'){
+            buf[i] = read();
             i++;
 
             if(i >= buf.length){
@@ -309,12 +317,31 @@ public class JsonReader {
         if(i < buf.length){
             byte[] r = new byte[i];
             System.arraycopy(buf, 0, r, 0, i);
-            //System.out.println("K: "+new String(r));
             return new JsonBytes(r);
         }
 
-        //System.out.println("K: "+new String(buf));
         return new JsonBytes(buf);
+    }
+
+    private JsonNumber getNumber()throws IOException {
+        //read();
+
+        byte[] buf = new byte[20];
+        int i = 0;
+        while(isNumber(peek())){
+            buf[i] = read();
+            i++;
+        }
+
+        if(i < buf.length){
+            byte[] r = new byte[i];
+            System.arraycopy(buf, 0, r, 0, i);
+            System.out.println("K: "+new String(r));
+            return new JsonNumber(new String(r));
+        }
+
+        System.out.println("K: "+new String(buf));
+        return new JsonNumber(new String(buf));
     }
 
 
