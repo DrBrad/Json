@@ -4,53 +4,34 @@ import unet.json.variables.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class JsonReader {
 
-    //LETS HANDLE THIS IN A BETTER MANNER...
-
     private InputStream in;
 
-    private byte n; //UNFORTUNATELY WE NEED TO SEEK AHEAD FOR NUMBERS...
+    private byte n;
 
     public JsonReader(InputStream in){
         this.in = in;
     }
 
-    public JsonObject readJsonObject()throws IOException {
-        //in.read();
-        /*
-        trim();
-
-        if(buf[pos] == '{'){
-            HashMap<JsonBytes, JsonVariable> m = new HashMap<>();
-            pos++;
-            //trim();
-
-            while(buf[pos] != '}'){
-                trim();
-                m.put(getBytes(), get());
-            }
-            pos++;
-            return m;
-        }*/
-        //byte b = (byte) in.read();
-        //n = (byte) in.read();
+    public JsonArray readJsonArray()throws IOException {
         read();
+        return new JsonArray(getArray());
+    }
 
-        return new JsonObject(decodeObject());
+    public JsonObject readJsonObject()throws IOException {
+        read();
+        return new JsonObject(getObject());
     }
 
     public void close()throws IOException {
         in.close();
     }
-
-
-
-
-
 
     private byte read()throws IOException {
         byte p = n;
@@ -62,34 +43,7 @@ public class JsonReader {
         return n;
     }
 
-
-
-
-
-
-
-
-    /*
-    private List<JsonVariable> decodeArray(){
-        trim();
-
-        if(buf[pos] == '['){
-            ArrayList<JsonVariable> a = new ArrayList<>();
-            pos++;
-            //trim();
-
-            while(buf[pos] != ']'){
-                trim();
-                a.add(get());
-            }
-            pos++;
-            return a;
-        }
-        return null;
-    }
-    */
-
-    private Map<JsonBytes, JsonVariable> decodeObject()throws IOException {
+    private Map<JsonBytes, JsonVariable> getObject()throws IOException {
         Map<JsonBytes, JsonVariable> m = new HashMap<>();
         while(peek() != '}'){
             read();
@@ -103,113 +57,18 @@ public class JsonReader {
         return m;
     }
 
-    /*
-    private JsonVariable get()throws IOException {
-        //IF CASE 0-9 = NUMBER
-        //IF CASE T | F = BOOLEAN
-        //IF CASE " = STRING
-        //IF CASE { = MAP
-        //IF CASE [ = LIST
-        //IF CASE n = NULL
-        //trim();
-
-        //System.out.println((char)(buf[pos]));
-
-        switch(buf[pos]){
-            case '"':
-                return getBytes();
-
-            case 't':
-                return getBoolean(true);
-
-            case 'T':
-                return getBoolean(true);
-
-            case 'f':
-                return getBoolean(false);
-
-            case 'F':
-                return getBoolean(false);
-
-            case 'n':
-                return getNull();
-
-            case 'N':
-                return getNull();
-
-            case '{':
-                return getMap();
-
-            case '[':
-                return getList();
-
-            default:
-                if(isNumber()){
-                    return getNumber();
-                }
+    private List<JsonVariable> getArray()throws IOException {
+        List<JsonVariable> l = new ArrayList<>();
+        while(peek() != ']'){
+            read();
+            l.add(get());
         }
 
-        return null;
+        read();
+
+        return l;
     }
 
-    private JsonNull getNull()throws IOException {
-        //trim();
-        pos += 5;
-        trim();
-        return new JsonNull();
-    }
-
-    private JsonBoolean getBoolean(boolean bool)throws IOException {
-        //trim();
-        pos += (bool) ? 5 : 6;
-        trim();
-
-        return new JsonBoolean(bool);
-    }
-
-    private JsonNumber getNumber()throws IOException {
-        //trim();
-        //pos++;
-
-        int s = pos;
-        while(isNumber()){
-            pos++;
-        }
-
-        byte[] b = new byte[pos-s];
-        System.arraycopy(buf, s, b, 0, b.length);
-
-        pos++;
-        trim();
-
-        return new JsonNumber(new String(b));
-    }
-
-    private JsonBytes getBytes()throws IOException {
-        //trim();
-        pos++;
-
-        int s = pos;
-        while(buf[pos] != '"'){
-            pos++;
-        }
-
-        byte[] b = new byte[pos-s];
-        System.arraycopy(buf, s, b, 0, b.length);
-
-        pos++;
-        trim();
-
-        return new JsonBytes(b);
-    }
-
-    private JsonArray getList()throws IOException {
-        return new JsonArray(decodeArray());
-    }
-
-    private JsonObject getMap()throws IOException {
-        return new JsonObject(decodeObject());
-    }*/
     private JsonVariable get()throws IOException {
         //IF CASE 0-9 = NUMBER
         //IF CASE T | F = BOOLEAN
@@ -254,11 +113,10 @@ public class JsonReader {
                 return new JsonNull();
 
             case '{':
-                return new JsonObject(decodeObject());
+                return new JsonObject(getObject());
 
             case '[':
-                //System.out.println("LIST");
-                //return getList();
+                return new JsonArray(getArray());
 
             default:
                 if(isNumber(peek())){
@@ -274,9 +132,7 @@ public class JsonReader {
 
         byte[] buf = new byte[1024];
         int i = 0;
-        //byte b;
         while(peek() != '"'){
-        //while((b = read()) != '"'){
             buf[i] = read();
             i++;
 
@@ -299,9 +155,7 @@ public class JsonReader {
     }
 
     private JsonNumber getNumber()throws IOException {
-        //read();
-
-        byte[] buf = new byte[20];
+        byte[] buf = new byte[23];
         int i = 0;
         while(isNumber(peek())){
             buf[i] = read();
@@ -317,7 +171,6 @@ public class JsonReader {
         return new JsonNumber(new String(buf));
     }
 
-    //IS THE DECIMAL POINT CONSIDERED A NUMBER...?
     private boolean isNumber(byte b){
         return (b == '0' ||
                 b == '1' ||

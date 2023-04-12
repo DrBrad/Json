@@ -12,27 +12,22 @@ public class IOTest {
     public static void main(String[] args)throws Exception {
         System.out.println("-= I/O TEST =-");
 
-        //String s = String.valueOf(Double.MAX_VALUE);
-        //String s2 = String.valueOf(Double.MIN_VALUE);
+        String s = String.valueOf(Double.MAX_VALUE);
+        String s2 = String.valueOf(Double.MIN_VALUE);
         
-        //System.out.println(s+"  "+s.length());
-        //System.out.println(s2+"  "+s2.length());
+        System.out.println(s+"  "+s.length());
+        System.out.println(s2+"  "+s2.length());
 
         JsonObject json = new JsonObject();
-
-
-
-
-
 
         JsonObject k = new JsonObject();
         k.put("insert", "Insert value");
         json.put("object", k); //TEST LAYERED PUT
-/*
+
         JsonArray l = new JsonArray();
         l.add("Test Array");
         json.put("array", l);
-*/
+
         json.put("title", "Earth to Echo"); //TEST STRING
         json.put("zzz", "asdasd"); //TEST STRING
         json.put("coming", 1680303600); //TEST INT
@@ -46,6 +41,7 @@ public class IOTest {
 
         System.out.println("\r\n\r\n");
 
+        System.out.println("INPUT TEST");
         JsonReader r = new JsonReader(new ByteArrayInputStream(json.encode()));
         json = r.readJsonObject();
         System.out.println(json);
