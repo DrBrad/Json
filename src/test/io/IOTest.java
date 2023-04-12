@@ -3,7 +3,9 @@ package test.io;
 import unet.json.io.JsonReader;
 import unet.json.io.JsonWriter;
 import unet.json.variables.JsonArray;
+import unet.json.variables.JsonArray2;
 import unet.json.variables.JsonObject;
+import unet.json.variables.JsonObject2;
 
 import java.io.ByteArrayInputStream;
 
@@ -12,13 +14,13 @@ public class IOTest {
     public static void main(String[] args)throws Exception {
         System.out.println("-= I/O TEST =-");
 
-        JsonObject json = new JsonObject();
+        JsonObject2 json = new JsonObject2();
 
-        JsonObject k = new JsonObject();
+        JsonObject2 k = new JsonObject2();
         k.put("insert", "Insert value");
         json.put("object", k); //TEST LAYERED PUT
 
-        JsonArray l = new JsonArray();
+        JsonArray2 l = new JsonArray2();
         l.add("Test Array");
         json.put("array", l);
 
@@ -28,15 +30,17 @@ public class IOTest {
         json.put("nullTest", null); //TEST NULL
 
         System.out.println("OUTPUT TEST");
-        JsonWriter w = new JsonWriter(System.out);
-        w.write(json);
-        w.flush();
-
+        //JsonWriter w = new JsonWriter(System.out);
+        //w.write(json);
+        //w.flush();
+/*
         System.out.println("\r\n\r\n");
 
         System.out.println("INPUT TEST");
         JsonReader r = new JsonReader(new ByteArrayInputStream(json.encode()));
-        json = r.readJsonObject();
+        JsonObject2 json1 = r.readJsonObject();*/
         System.out.println(json);
+
+        System.out.println(json.size());
     }
 }

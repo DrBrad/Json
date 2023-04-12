@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,14 +23,14 @@ public class JsonReader {
         this.in = in;
     }
 
-    public JsonArray readJsonArray()throws IOException {
+    public JsonArray2 readJsonArray()throws IOException {
         read();
-        return new JsonArray(getArray());
+        return getArray();
     }
 
-    public JsonObject readJsonObject()throws IOException {
+    public JsonObject2 readJsonObject()throws IOException {
         read();
-        return new JsonObject(getObject());
+        return getObject();
     }
 
     //WE MAY WANT TO MOVE THIS TO ITS OWN CLASS...
@@ -60,7 +62,7 @@ public class JsonReader {
         return n;
     }
 
-    private JsonVariable get()throws IOException {
+    private Object get()throws IOException, ParseException {
         //IF CASE 0-9 = NUMBER
         //IF CASE T | F = BOOLEAN
         //IF CASE " = STRING
@@ -71,7 +73,7 @@ public class JsonReader {
         //byte b = (byte) in.read();
         switch(peek()){
             case '"':
-                return getBytes();
+                return getString();
 
             case 't':
                 in.skip(3);
@@ -104,10 +106,10 @@ public class JsonReader {
                 return new JsonNull();
 
             case '{':
-                return new JsonObject(getObject());
+                return getObject();
 
             case '[':
-                return new JsonArray(getArray());
+                return getArray();
 
             default:
                 if(isNumber(peek())){
@@ -118,33 +120,42 @@ public class JsonReader {
         return null;
     }
 
-    private Map<JsonBytes, JsonVariable> getObject()throws IOException {
-        Map<JsonBytes, JsonVariable> m = new HashMap<>();
+    private /*Map<String, Object>*/JsonObject2 getObject()throws IOException {
+        //Map<String, Object> m = new HashMap<>();
+        JsonObject2 j = new JsonObject2();
         while(peek() != '}'){
             read();
-            JsonBytes k = getBytes();
+            String k = getString();
+            //JsonBytes k = getBytes();
             read();
-            m.put(k, get());
+            try{
+                j.put(k, get());
+            }catch(ParseException e){
+            }
         }
 
         read();
 
-        return m;
+        return j;
     }
 
-    private List<JsonVariable> getArray()throws IOException {
-        List<JsonVariable> l = new ArrayList<>();
+    private JsonArray2 getArray()throws IOException {
+        //List<Object> l = new ArrayList<>();
+        JsonArray2 j = new JsonArray2();
         while(peek() != ']'){
             read();
-            l.add(get());
+            try{
+                j.add(get());
+            }catch(ParseException e){
+            }
         }
 
         read();
 
-        return l;
+        return j;
     }
 
-    private JsonBytes getBytes()throws IOException {
+    private String getString()throws IOException {
         read();
 
         byte[] buf = new byte[1024];
@@ -165,13 +176,13 @@ public class JsonReader {
         if(i < buf.length){
             byte[] r = new byte[i];
             System.arraycopy(buf, 0, r, 0, i);
-            return new JsonBytes(r);
+            return new String(r);
         }
 
-        return new JsonBytes(buf);
+        return new String(buf);
     }
 
-    private JsonNumber getNumber()throws IOException {
+    private Number getNumber()throws IOException, ParseException {
         byte[] buf = new byte[23];
         int i = 0;
         while(isNumber(peek())){
@@ -182,10 +193,10 @@ public class JsonReader {
         if(i < buf.length){
             byte[] r = new byte[i];
             System.arraycopy(buf, 0, r, 0, i);
-            return new JsonNumber(new String(r));
+            return NumberFormat.getInstance().parse(new String(r));
         }
 
-        return new JsonNumber(new String(buf));
+        return NumberFormat.getInstance().parse(new String(buf));
     }
 
     private boolean isNumber(byte b){
