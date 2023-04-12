@@ -15,7 +15,6 @@ public class Json {
     private byte[] buf;
     private int pos = 0;
 
-    //I/O STREAM FOR JSON
     //SERIALIZE JSON - PRETTY AND NOT
     //REMOVE OBSERVER IF SET OR PUT
     //FINISH SANITIZATION...
