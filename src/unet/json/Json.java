@@ -226,10 +226,9 @@ public class Json {
 
                     j.put(field.getName(), field.get(o));
 
-                }else{
+                }else if(field.get(o) != null){
                     j.put(field.getName(), toJson(field.get(o)));
                 }
-
             }
         }
 

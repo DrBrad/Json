@@ -23,27 +23,8 @@ public class JsonToClassReader {
         this.in = in;
     }
 
-    //WE MAY WANT TO MOVE THIS TO ITS OWN CLASS...
     public Object readToClass(Class<?> c)throws ReflectiveOperationException, IOException, ParseException {
-        //Constructor<?> constructor = c.getDeclaredConstructor();
-        //Object i = constructor.newInstance();
-
-        /*
-        Map<String, Field> fields = new HashMap<>();
-
-        //DO STUFF...
-        for(Field field : c.getDeclaredFields()){
-            if(field.isAnnotationPresent(JsonExpose.class) && field.getAnnotation(JsonExpose.class).deserialize()){
-                fields.put(field.getName(), field);
-            }
-        }
-        */
-        //c.getDeclaredField("a")
-
-
         read();
-        //new JsonObject(getObject());
-
         return getObject(c);
     }
 
@@ -122,73 +103,35 @@ public class JsonToClassReader {
     private Object getObject(Class<?> c)throws ReflectiveOperationException, IOException, ParseException {
         Constructor<?> constructor = c.getDeclaredConstructor();
         Object i = constructor.newInstance();
-        //Map<JsonString, JsonVariable> m = new HashMap<>();
         while(peek() != '}'){
             read();
             String k = getString();
             read();
 
-            Object v = get(c);
-
-
             try{
                 Field field = c.getDeclaredField(k);
-
 
                 if(field.isAnnotationPresent(JsonExpose.class) && field.getAnnotation(JsonExpose.class).deserialize()){
                     field.setAccessible(true);
 
-                    switch(v.hashCode()){
-                        case 0: //STRING
-                            if(String.class.isAssignableFrom(field.getType())){
-                                field.set(i, v);
-                            }
-                            break;
+                    if(field.getType().isPrimitive() ||
+                            field.getType() == Object.class ||
+                            String.class.isAssignableFrom(field.getType()) ||
+                            List.class.isAssignableFrom(field.getType()) ||
+                            Map.class.isAssignableFrom(field.getType())){
 
-                        case 1: //NUMBER
-                            if(field.getType().equals(int.class)){
-                                field.set(i, ((Integer) v).doubleValue());
+                        field.set(i, get(c));
+                        continue;
 
-                            }else if(field.getType().equals(long.class)){
-                                //}else if(Long.class.isAssignableFrom(method.getParameterTypes()[0])){
-                                field.set(i, ((Long) v).longValue());
-
-                            }else if(field.getType().equals(double.class)){
-                                //}else if(Double.class.isAssignableFrom(method.getParameterTypes()[0])){
-                                field.set(i, ((Double) v).doubleValue());
-                            }
-                            break;
-
-                        case 2: //ARRAY
-                            if(List.class.isAssignableFrom(field.getType())){
-                                field.set(i, v);
-                            }
-                            break;
-                    /*
-                    case 3: //OBJECT
-                        if(Map.class.isAssignableFrom(field.getType())){
-                            field.set(i, v);
-
-                        }else{
-                            field.set(i, fromJson(field.getType(), (JsonObject) v));
-                        }
-                        break;
-
-                    case 4: //BOOLEAN
-                        if(field.getType().equals(boolean.class)){
-                            field.set(i, v.getObject());
-                        }
-                        break;*/
-
-                        case 5: //NULL
-                            field.set(i, null);
-                            break;
+                    }else{
+                        field.set(i, get(field.getType()));
+                        continue;
                     }
                 }
-
             }catch(NoSuchFieldError e){
-
             }
+
+            get(c);
         }
 
         read();
@@ -196,11 +139,11 @@ public class JsonToClassReader {
         return i;
     }
 
-    private List<JsonVariable> getArray()throws IOException {
-        List<JsonVariable> l = new ArrayList<>();
+    private List<Object> getArray(Class<?> c)throws ReflectiveOperationException, IOException, ParseException {
+        List<Object> l = new ArrayList<>();
         while(peek() != ']'){
             read();
-            //l.add(get());
+            l.add(get(c));
         }
 
         read();
