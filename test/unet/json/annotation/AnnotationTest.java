@@ -71,6 +71,7 @@ public class AnnotationTest {
         System.out.println("INPUT TEST");
         JsonToClassReader r = new JsonToClassReader(new ByteArrayInputStream(json.encode()));
         m = (Movie2) r.readToClass(Movie2.class);
+        r.close();
         System.out.println(m.getId().getId());
         System.out.println(m.getTitle());
         System.out.println(m.getDescription());
