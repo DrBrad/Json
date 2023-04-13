@@ -116,6 +116,7 @@ public static void main(String[] args)throws Exception {
     //READ
     JsonToClassReader r = new JsonToClassReader(new ByteArrayInputStream(json.encode())); //WILL WORK WITH ANY INPUT-STREAM
     Foo f = (Foo) r.readToClass(Foo.class);
+    r.close();
     System.out.println(f.getTitle());
 
     //WRITE
