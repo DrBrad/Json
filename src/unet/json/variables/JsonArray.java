@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class JsonArray implements JsonVariable, JsonObserver {
 
-    private ArrayList<JsonVariable> l = new ArrayList<>();
+    private List<JsonVariable> l = new ArrayList<>();
     private JsonObserver o;
     private int s = 2;
 
@@ -35,11 +35,11 @@ public class JsonArray implements JsonVariable, JsonObserver {
     }
 
     public JsonArray(byte[] buf){
-        this(new Json().decodeArray(buf, 0));
+        new Json().decodeArray(this, buf, 0);
     }
 
     public JsonArray(byte[] buf, int off){
-        this(new Json().decodeArray(buf, off));
+        new Json().decodeArray(this, buf, off);
     }
 
     private void add(JsonVariable v){
@@ -316,7 +316,7 @@ public class JsonArray implements JsonVariable, JsonObserver {
 
     @Override
     public Object getObject(){
-        ArrayList<Object> a = new ArrayList<>();
+        List<Object> a = new ArrayList<>();
         for(JsonVariable v : l){
             a.add(v.getObject());
         }

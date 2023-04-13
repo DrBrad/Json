@@ -239,16 +239,38 @@ public class Json {
     }
 
 
-    public List<JsonVariable> decodeArray(byte[] buf, int off){
+    public void decodeArray(JsonArray j, byte[] buf, int off){
         this.buf = buf;
         pos = off;
-        return getArray();
+
+        trim();
+
+        if(buf[pos] == '['){
+            pos++;
+
+            while(buf[pos] != ']'){
+                trim();
+                j.add(get());
+            }
+            pos++;
+        }
     }
 
-    public Map<JsonString, JsonVariable> decodeObject(byte[] buf, int off){
+    public void decodeObject(JsonObject j, byte[] buf, int off){
         this.buf = buf;
         pos = off;
-        return getObject();
+
+        trim();
+
+        if(buf[pos] == '{'){
+            pos++;
+
+            while(buf[pos] != '}'){
+                trim();
+                j.put(getString(), get());
+            }
+            pos++;
+        }
     }
 
     private void put(JsonVariable v){
@@ -375,10 +397,10 @@ public class Json {
                 return getNull();
 
             case '{':
-                return new JsonObject(getObject());
+                return getObject();
 
             case '[':
-                return new JsonArray(getArray());
+                return getArray();
 
             default:
                 if(isNumber()){
@@ -435,36 +457,38 @@ public class Json {
     }
 
 
-    private List<JsonVariable> getArray(){
+    private JsonArray getArray(){
         trim();
 
         if(buf[pos] == '['){
-            ArrayList<JsonVariable> a = new ArrayList<>();
+            JsonArray j = new JsonArray();
+            //List<JsonVariable> a = new ArrayList<>();
             pos++;
 
             while(buf[pos] != ']'){
                 trim();
-                a.add(get());
+                j.add(get());
             }
             pos++;
-            return a;
+            return j;
         }
         return null;
     }
 
-    private Map<JsonString, JsonVariable> getObject(){
+    private JsonObject getObject(){
         trim();
 
         if(buf[pos] == '{'){
-            HashMap<JsonString, JsonVariable> m = new HashMap<>();
+            JsonObject j = new JsonObject();
+            //Map<JsonString, JsonVariable> m = new HashMap<>();
             pos++;
 
             while(buf[pos] != '}'){
                 trim();
-                m.put(getString(), get());
+                j.put(getString(), get());
             }
             pos++;
-            return m;
+            return j;
         }
         return null;
     }

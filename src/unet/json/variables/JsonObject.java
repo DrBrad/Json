@@ -8,7 +8,7 @@ import java.util.*;
 
 public class JsonObject  implements JsonVariable, JsonObserver {
 
-    private HashMap<JsonString, JsonVariable> m = new HashMap<>();
+    private Map<JsonString, JsonVariable> m = new HashMap<>();
     private JsonObserver o;
     private int s = 2;
 
@@ -46,14 +46,16 @@ public class JsonObject  implements JsonVariable, JsonObserver {
     }
 
     public JsonObject(byte[] buf){
-        this(new Json().decodeObject(buf, 0));
+        new Json().decodeObject(this, buf, 0);
+        //this(new Json().decodeObject(buf, 0));
     }
 
     public JsonObject(byte[] buf, int off){
-        this(new Json().decodeObject(buf, off));
+        new Json().decodeObject(this, buf, off);
+        //this(new Json().decodeObject(buf, off));
     }
 
-    private void put(JsonString k, JsonVariable v){
+    public void put(JsonString k, JsonVariable v){
         m.put(k, v);
         setByteSize(k.byteSize()+v.byteSize()+2);
 
@@ -239,7 +241,7 @@ public class JsonObject  implements JsonVariable, JsonObserver {
 
     @Override
     public Map<String, ?> getObject(){
-        HashMap<String, Object> h = new HashMap<>();
+        Map<String, Object> h = new HashMap<>();
         for(JsonString k : m.keySet()){
             h.put(new String(k.getObject()), m.get(k).getObject());
         }

@@ -4,29 +4,42 @@ import unet.json.variables.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class JsonReader {
+public class JsonToClassReader {
 
     private InputStream in;
 
     private byte n;
 
-    public JsonReader(InputStream in){
+    public JsonToClassReader(InputStream in){
         this.in = in;
     }
 
-    public JsonArray readJsonArray()throws IOException {
-        read();
-        return getArray();
-    }
+    //WE MAY WANT TO MOVE THIS TO ITS OWN CLASS...
+    public Object readToClass(Class<?> c)throws ReflectiveOperationException, IOException {
+        Constructor<?> constructor = c.getDeclaredConstructor();
+        Object i = constructor.newInstance();
 
-    public JsonObject readJsonObject()throws IOException {
+        Map<String, Field> fields = new HashMap<>();
+
+        //DO STUFF...
+        for(Field field : c.getDeclaredFields()){
+            if(field.isAnnotationPresent(JsonExpose.class) && field.getAnnotation(JsonExpose.class).deserialize()){
+                fields.put(field.getName(), field);
+            }
+        }
+
+
         read();
-        return getObject();
+        //new JsonObject(getObject());
+
+        return i;
     }
 
     public void close()throws IOException {
@@ -87,10 +100,10 @@ public class JsonReader {
                 return new JsonNull();
 
             case '{':
-                return getObject();
+                return new JsonObject(getObject());
 
             case '[':
-                return getArray();
+                return new JsonArray(getArray());
 
             default:
                 if(isNumber(peek())){
@@ -101,31 +114,30 @@ public class JsonReader {
         return null;
     }
 
-    private JsonObject getObject()throws IOException {
-        JsonObject j = new JsonObject();
-        //Map<JsonString, JsonVariable> m = new HashMap<>();
+    private Map<JsonString, JsonVariable> getObject()throws IOException {
+        Map<JsonString, JsonVariable> m = new HashMap<>();
         while(peek() != '}'){
             read();
             JsonString k = getString();
             read();
-            j.put(k, get());
+            m.put(k, get());
         }
 
         read();
 
-        return j;
+        return m;
     }
 
-    private JsonArray getArray()throws IOException {
-        JsonArray j = new JsonArray();
+    private List<JsonVariable> getArray()throws IOException {
+        List<JsonVariable> l = new ArrayList<>();
         while(peek() != ']'){
             read();
-            j.add(get());
+            l.add(get());
         }
 
         read();
 
-        return j;
+        return l;
     }
 
     private JsonString getString()throws IOException {
