@@ -53,8 +53,6 @@ public class Json {
                         case 0: //STRING
                             if(String.class.isAssignableFrom(field.getType())){
                                 field.set(i, ((JsonString) v).getObject());
-                            }else if(field.getType().equals(byte[].class)){
-                                field.set(i, v.getObject());
                             }
                             break;
 

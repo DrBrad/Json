@@ -1,7 +1,11 @@
 package test.annotation;
 
 import unet.json.Json;
+import unet.json.io.JsonReader;
+import unet.json.io.JsonToClassReader;
 import unet.json.variables.JsonObject;
+
+import java.io.ByteArrayInputStream;
 
 public class AnnotationTest {
 
@@ -35,6 +39,7 @@ public class AnnotationTest {
         }
         */
 
+        System.out.println("SERIALIZE TEST");
         //System.out.println(m.getId().get("$oid"));//.getId());
         System.out.println(m.getId().getId());
         System.out.println(m.getTitle());
@@ -50,7 +55,34 @@ public class AnnotationTest {
         //System.out.println(m.getNullTest());
 
         //DESERIALIZE TEST
+        System.out.println("\r\n\r\n");
+
+        System.out.println("DESERIALIZE TEST");
         json = Json.toJson(m);
         System.out.println(json);
+
+
+
+
+
+        System.out.println("\r\n\r\n");
+
+        System.out.println("INPUT TEST");
+        JsonToClassReader r = new JsonToClassReader(new ByteArrayInputStream(json.encode()));
+        m = (Movie2) r.readToClass(Movie2.class);
+        //System.out.println(m.getId().getId());
+        System.out.println(m.getTitle());
+        System.out.println(m.getDescription());
+        System.out.println(m.getRating());
+        System.out.println(m.getTime());
+        System.out.println(m.getGenre());
+        System.out.println(m.getYear());
+        System.out.println(m.getComing());
+        System.out.println(m.getPortrait());
+        System.out.println(m.getLandscape());
+        System.out.println(m.getBoolTest());
+
+
+
     }
 }

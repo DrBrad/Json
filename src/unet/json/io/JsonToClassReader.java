@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,10 +24,11 @@ public class JsonToClassReader {
     }
 
     //WE MAY WANT TO MOVE THIS TO ITS OWN CLASS...
-    public Object readToClass(Class<?> c)throws ReflectiveOperationException, IOException {
-        Constructor<?> constructor = c.getDeclaredConstructor();
-        Object i = constructor.newInstance();
+    public Object readToClass(Class<?> c)throws ReflectiveOperationException, IOException, ParseException {
+        //Constructor<?> constructor = c.getDeclaredConstructor();
+        //Object i = constructor.newInstance();
 
+        /*
         Map<String, Field> fields = new HashMap<>();
 
         //DO STUFF...
@@ -34,12 +37,14 @@ public class JsonToClassReader {
                 fields.put(field.getName(), field);
             }
         }
+        */
+        //c.getDeclaredField("a")
 
 
         read();
         //new JsonObject(getObject());
 
-        return i;
+        return getObject(c);
     }
 
     public void close()throws IOException {
@@ -56,7 +61,7 @@ public class JsonToClassReader {
         return n;
     }
 
-    private JsonVariable get()throws IOException {
+    private Object get(Class<?> c)throws ReflectiveOperationException, IOException, ParseException {
         //IF CASE 0-9 = NUMBER
         //IF CASE T | F = BOOLEAN
         //IF CASE " = STRING
@@ -72,38 +77,38 @@ public class JsonToClassReader {
             case 't':
                 in.skip(3);
                 read();
-                return new JsonBoolean(true);
+                return true;
 
             case 'T':
                 in.skip(3);
                 read();
-                return new JsonBoolean(true);
+                return true;
 
             case 'f':
                 in.skip(4);
                 read();
-                return new JsonBoolean(false);
+                return false;
 
             case 'F':
                 in.skip(4);
                 read();
-                return new JsonBoolean(false);
+                return false;
 
             case 'n':
                 in.skip(3);
                 read();
-                return new JsonNull();
+                return null;
 
             case 'N':
                 in.skip(3);
                 read();
-                return new JsonNull();
+                return null;
 
             case '{':
-                return new JsonObject(getObject());
+                return getObject(c);
 
             case '[':
-                return new JsonArray(getArray());
+                //return getArray();
 
             default:
                 if(isNumber(peek())){
@@ -114,25 +119,88 @@ public class JsonToClassReader {
         return null;
     }
 
-    private Map<JsonString, JsonVariable> getObject()throws IOException {
-        Map<JsonString, JsonVariable> m = new HashMap<>();
+    private Object getObject(Class<?> c)throws ReflectiveOperationException, IOException, ParseException {
+        Constructor<?> constructor = c.getDeclaredConstructor();
+        Object i = constructor.newInstance();
+        //Map<JsonString, JsonVariable> m = new HashMap<>();
         while(peek() != '}'){
             read();
-            JsonString k = getString();
+            String k = getString();
             read();
-            m.put(k, get());
+
+            Object v = get(c);
+
+
+            try{
+                Field field = c.getDeclaredField(k);
+
+
+                if(field.isAnnotationPresent(JsonExpose.class) && field.getAnnotation(JsonExpose.class).deserialize()){
+                    field.setAccessible(true);
+
+                    switch(v.hashCode()){
+                        case 0: //STRING
+                            if(String.class.isAssignableFrom(field.getType())){
+                                field.set(i, v);
+                            }
+                            break;
+
+                        case 1: //NUMBER
+                            if(field.getType().equals(int.class)){
+                                field.set(i, ((Integer) v).doubleValue());
+
+                            }else if(field.getType().equals(long.class)){
+                                //}else if(Long.class.isAssignableFrom(method.getParameterTypes()[0])){
+                                field.set(i, ((Long) v).longValue());
+
+                            }else if(field.getType().equals(double.class)){
+                                //}else if(Double.class.isAssignableFrom(method.getParameterTypes()[0])){
+                                field.set(i, ((Double) v).doubleValue());
+                            }
+                            break;
+
+                        case 2: //ARRAY
+                            if(List.class.isAssignableFrom(field.getType())){
+                                field.set(i, v);
+                            }
+                            break;
+                    /*
+                    case 3: //OBJECT
+                        if(Map.class.isAssignableFrom(field.getType())){
+                            field.set(i, v);
+
+                        }else{
+                            field.set(i, fromJson(field.getType(), (JsonObject) v));
+                        }
+                        break;
+
+                    case 4: //BOOLEAN
+                        if(field.getType().equals(boolean.class)){
+                            field.set(i, v.getObject());
+                        }
+                        break;*/
+
+                        case 5: //NULL
+                            field.set(i, null);
+                            break;
+                    }
+                }
+
+            }catch(NoSuchFieldError e){
+
+            }
         }
 
         read();
 
-        return m;
+        return i;
     }
 
     private List<JsonVariable> getArray()throws IOException {
         List<JsonVariable> l = new ArrayList<>();
         while(peek() != ']'){
             read();
-            l.add(get());
+            //l.add(get());
         }
 
         read();
@@ -140,7 +208,7 @@ public class JsonToClassReader {
         return l;
     }
 
-    private JsonString getString()throws IOException {
+    private String getString()throws IOException {
         read();
 
         byte[] buf = new byte[1024];
@@ -161,13 +229,13 @@ public class JsonToClassReader {
         if(i < buf.length){
             byte[] r = new byte[i];
             System.arraycopy(buf, 0, r, 0, i);
-            return new JsonString(r);
+            return new String(r);
         }
 
-        return new JsonString(buf);
+        return new String(buf);
     }
 
-    private JsonNumber getNumber()throws IOException {
+    private Number getNumber()throws IOException, ParseException {
         byte[] buf = new byte[23];
         int i = 0;
         while(isNumber(peek())){
@@ -178,10 +246,10 @@ public class JsonToClassReader {
         if(i < buf.length){
             byte[] r = new byte[i];
             System.arraycopy(buf, 0, r, 0, i);
-            return new JsonNumber(new String(r));
+            return NumberFormat.getInstance().parse(new String(r));
         }
 
-        return new JsonNumber(new String(buf));
+        return NumberFormat.getInstance().parse(new String(buf));
     }
 
     private boolean isNumber(byte b){
