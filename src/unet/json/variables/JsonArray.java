@@ -20,10 +20,14 @@ public class JsonArray implements JsonVariable, JsonObserver {
 
     public JsonArray(List<?> l){
         for(Object v : l){
-            if(v instanceof JsonVariable){
+            if(v == null){
+                add(new JsonNull());
+            }else if(v instanceof JsonVariable){
                 add((JsonVariable) v);
             }else if(v instanceof Number){
                 add(new JsonNumber(v.toString()));
+            }else if(v instanceof Boolean){
+                add(new JsonBoolean((Boolean) v));
             }else if(v instanceof String){
                 add(new JsonString((String) v));
             }else if(v instanceof List<?>){

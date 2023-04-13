@@ -91,7 +91,7 @@ public class AnnotationTest {
 
         System.out.println("OUTPUT TEST");
         JsonFromClassWriter w = new JsonFromClassWriter(System.out);
-        w.write(m);
+        w.writeClass(m);
         w.flush();
     }
 }
