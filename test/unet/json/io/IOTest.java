@@ -1,4 +1,4 @@
-package test.io;
+package unet.json.io;
 
 import unet.json.io.JsonReader;
 import unet.json.io.JsonWriter;

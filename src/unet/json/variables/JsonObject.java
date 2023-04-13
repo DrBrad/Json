@@ -2,8 +2,6 @@ package unet.json.variables;
 
 import unet.json.Json;
 
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class JsonObject  implements JsonVariable, JsonObserver {

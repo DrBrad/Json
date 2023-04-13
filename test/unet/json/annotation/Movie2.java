@@ -1,4 +1,4 @@
-package test.annotation;
+package unet.json.annotation;
 
 import unet.json.variables.JsonExpose;
 

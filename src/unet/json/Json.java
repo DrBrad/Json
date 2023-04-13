@@ -4,8 +4,6 @@ import unet.json.variables.*;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,8 +15,6 @@ public class Json {
     //SERIALIZE JSON - PRETTY AND NOT
     //REMOVE OBSERVER IF SET OR PUT
     //FINISH SANITIZATION...
-    //Annotation object/arrays within object... - SHOULD ALLOW SUB CLASSES...
-    //Annotation Input Stream to/from i/o
     //Annotation to/from bytes
     //WE SHOULD BE USING HASH-CODES NOT INSTANCES...
     //HANDLE NUMBERS/BOOLEANS/NULL BETTER...

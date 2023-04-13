@@ -1,10 +1,8 @@
-package test.annotation;
+package unet.json.annotation;
 
 import unet.json.Json;
 import unet.json.io.JsonFromClassWriter;
-import unet.json.io.JsonReader;
 import unet.json.io.JsonToClassReader;
-import unet.json.io.JsonWriter;
 import unet.json.variables.JsonObject;
 
 import java.io.ByteArrayInputStream;
