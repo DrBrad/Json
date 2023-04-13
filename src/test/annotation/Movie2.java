@@ -2,9 +2,6 @@ package test.annotation;
 
 import unet.json.variables.JsonExpose;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class Movie2 {
 
     @JsonExpose

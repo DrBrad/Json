@@ -1,8 +1,10 @@
 package test.annotation;
 
 import unet.json.Json;
+import unet.json.io.JsonFromClassWriter;
 import unet.json.io.JsonReader;
 import unet.json.io.JsonToClassReader;
+import unet.json.io.JsonWriter;
 import unet.json.variables.JsonObject;
 
 import java.io.ByteArrayInputStream;
@@ -85,5 +87,11 @@ public class AnnotationTest {
 
 
 
+        System.out.println("\r\n\r\n");
+
+        System.out.println("OUTPUT TEST");
+        JsonFromClassWriter w = new JsonFromClassWriter(System.out);
+        w.write(m);
+        w.flush();
     }
 }

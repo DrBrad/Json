@@ -23,15 +23,30 @@ public class JsonFromClassWriter {
             if(field.isAnnotationPresent(JsonExpose.class) && field.getAnnotation(JsonExpose.class).serialize()){
                 field.setAccessible(true);
 
-                if(field.getType().isPrimitive() ||
+
+                write(field.getName());
+                out.write(':');
+
+                if(field.get(o) == null){
+                    out.write(new byte[]{
+                            'n',
+                            'u',
+                            'l',
+                            'l'
+                    });
+                    out.write(',');
+
+                }else if(field.getType().isPrimitive() ||
                         field.getType() == Object.class ||
                         String.class.isAssignableFrom(field.getType()) ||
                         List.class.isAssignableFrom(field.getType()) ||
                         Map.class.isAssignableFrom(field.getType())){
 
+                    write(field.get(o));
+                    //System.err.println(field.get(o));
                     //j.put(field.getName(), field.get(o));
 
-                }else if(field.get(o) != null){
+                }else{// if(field.get(o) != null){
                     //j.put(field.getName(), toJson(field.get(o)));
                 }
             }
@@ -60,7 +75,8 @@ public class JsonFromClassWriter {
         out.close();
     }
 
-    private void write(JsonVariable v)throws IOException {
+    //private void write(Object v)throws IOException {
+        /*
         if(v instanceof JsonString){
             write((JsonString) v);
         }else if(v instanceof JsonNumber){
@@ -74,21 +90,41 @@ public class JsonFromClassWriter {
         }else if(v instanceof JsonObject){
             write((JsonObject) v);
         }
-    }
+        */
+        //return;
+    //}
 
-    private void write(JsonString v)throws IOException {
+    private void write(String v)throws IOException {
+        out.write('"');
         out.write(v.getBytes());
+        out.write('"');
     }
 
-    private void write(JsonNumber n)throws IOException {
-        out.write(n.getBytes());
+    private void write(Number n)throws IOException {
+        out.write(n.toString().getBytes());
     }
 
-    private void write(JsonBoolean b)throws IOException {
-        out.write(b.getBytes());
+    private void write(Boolean b)throws IOException {
+        out.write((b) ? new byte[]{
+                't',
+                'r',
+                'u',
+                'e'
+            } : new byte[]{
+                'f',
+                'a',
+                'l',
+                's',
+                'e'
+            });
     }
 
-    private void write(JsonNull n)throws IOException {
-        out.write(n.getBytes());
+    private void write()throws IOException {
+        out.write(new byte[]{
+                'n',
+                'u',
+                'l',
+                'l'
+            });
     }
 }
