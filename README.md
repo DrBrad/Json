@@ -108,3 +108,32 @@ public static class Foo {
     }
 }
 ```
+
+**Annotation Serialization I/O**
+```Java
+public static void main(String[] args)throws Exception {
+    //READ
+    JsonToClassReader r = new JsonToClassReader(new ByteArrayInputStream(json.encode())); //WILL WORK WITH ANY INPUT-STREAM
+    Foo f = (Foo) r.readToClass(Foo.class);
+    System.out.println(f.getTitle());
+
+    //WRITE
+    JsonFromClassWriter w = new JsonFromClassWriter(System.out); //WILL WORK WITH ANY OUTPUT-STREAM
+    w.writeClass(f);
+    w.flush();
+}
+
+public static class Foo {
+
+    @JsonExpose
+    private String title;
+
+    public String getTitle(){
+        return title;
+    }
+
+    public void setTitle(String title){
+        this.title = title;
+    }
+}
+```
