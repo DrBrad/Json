@@ -253,7 +253,7 @@ public class Json {
         this.buf = buf;
         pos = off;
 
-        trim();
+        //trim();
 
         if(buf[pos] == '{'){
             pos++;
@@ -435,13 +435,93 @@ public class Json {
     private JsonString getString(){
         pos++;
 
+        /*
+        int a = 0;
         int s = pos;
-        while(buf[pos] != '"'){
+        while((a%2 == 1 && buf[pos] == '"') || buf[pos] != '"'){
+            if(buf[pos] == '\\'){
+                a++;
+            }else if(buf[pos] != '"'){
+                a = 0;
+            }
             pos++;
         }
+        */
+        byte[] b = new byte[1024];
+        int s = pos, a = 0;
+        while((a%2 == 1 && buf[pos] == '"') || buf[pos] != '"'){
+            /*
+            if(buf[pos] == '\\'){
+                a++;
+                b[pos-s] = buf[pos];
+            }else if(buf[pos] != '"'){
+                a = 0;
+                b[pos-s] = buf[pos];
+            }else{
+                s++;
+                b[pos-s] = buf[pos];
+            }
+            */
+            if(buf[pos] == '\\'){
+                s++;
+                pos++;
+                switch(buf[pos]){
+                    case '\"':
+                        a++;
+                        b[pos-s] = '\"';
+                        break;
 
-        byte[] b = new byte[pos-s];
-        System.arraycopy(buf, s, b, 0, b.length);
+                    case 'n':
+                        b[pos-s] = '\n';
+                        break;
+
+                    case 'r':
+                        b[pos-s] = '\r';
+                        break;
+
+                    case 'f':
+                        b[pos-s] = '\f';
+                        break;
+
+                    case 'b':
+                        b[pos-s] = '\b';
+                        break;
+
+                    case 't':
+                        b[pos-s] = '\t';
+                        break;
+
+                    default:
+                        a = 0;
+                        b[pos-s] = buf[pos];
+                }
+
+            }else{
+                a = 0;
+                b[pos-s] = buf[pos];
+            }
+
+            pos++;
+
+            if(pos-s >= buf.length){
+                byte[] r = new byte[buf.length+1024];
+                System.arraycopy(b, 0, r, 0, pos-s);
+                b = r;
+            }
+        }
+
+        //pos += i;
+        if(pos-s < buf.length){
+            byte[] r = new byte[pos-s];
+            System.arraycopy(b, 0, r, 0, pos-s);
+            pos++;
+            trim();
+            return new JsonString(r);
+        }
+
+
+        //byte[] b = new byte[pos-s];
+        //System.arraycopy(buf, s, b, 0, b.length);
 
         pos++;
         trim();
