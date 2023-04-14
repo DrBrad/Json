@@ -201,7 +201,12 @@ public class JsonObject  implements JsonVariable, JsonObserver {
     public void remove(String k){
         JsonString b = new JsonString(k);
         if(m.containsKey(b)){
-            setByteSize(-b.byteSize()-m.get(b).byteSize());
+            setByteSize(-b.byteSize()-m.get(b).byteSize()-2);
+            if(m.get(b) instanceof JsonObject){
+                ((JsonObject) m.get(b)).setObserver(null);
+            }else if(m.get(b) instanceof JsonArray){
+                ((JsonArray) m.get(b)).setObserver(null);
+            }
             m.remove(b);
         }
     }

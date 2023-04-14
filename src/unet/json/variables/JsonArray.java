@@ -259,8 +259,13 @@ public class JsonArray implements JsonVariable, JsonObserver {
 
     private void remove(JsonVariable v){
         if(l.contains(v)){
+            setByteSize(-v.byteSize()-1);
+            if(v instanceof JsonObject){
+                ((JsonObject) v).setObserver(null);
+            }else if(v instanceof JsonArray){
+                ((JsonArray) v).setObserver(null);
+            }
             l.remove(v);
-            setByteSize(-v.byteSize());
         }
     }
 
