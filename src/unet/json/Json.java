@@ -449,19 +449,7 @@ public class Json {
         */
         byte[] b = new byte[1024];
         int s = pos, a = 0;
-        while((a%2 == 1 && buf[pos] == '"') || buf[pos] != '"'){
-            /*
-            if(buf[pos] == '\\'){
-                a++;
-                b[pos-s] = buf[pos];
-            }else if(buf[pos] != '"'){
-                a = 0;
-                b[pos-s] = buf[pos];
-            }else{
-                s++;
-                b[pos-s] = buf[pos];
-            }
-            */
+        while(buf[pos] != '"' || (a%2 == 1 && buf[pos] == '"')){
             if(buf[pos] == '\\'){
                 s++;
                 pos++;

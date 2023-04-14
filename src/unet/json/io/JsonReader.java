@@ -131,6 +131,7 @@ public class JsonReader {
     private JsonString getString()throws IOException {
         read();
 
+        /*
         byte[] buf = new byte[1024];
         int i = 0;
         while(peek() != '"'){
@@ -143,16 +144,69 @@ public class JsonReader {
                 buf = r;
             }
         }
+        */
+        byte[] b = new byte[1024];
+        int i = 0, a = 0;
+        while(peek() != '"' || (a%2 == 1 && peek() == '"')){
+            if(peek() == '\\'){
+                read();
+
+                switch(peek()){
+                    case '\"':
+                        a++;
+                        b[i] = '\"';
+                        break;
+
+                    case 'n':
+                        b[i] = '\n';
+                        break;
+
+                    case 'r':
+                        b[i] = '\r';
+                        break;
+
+                    case 'f':
+                        b[i] = '\f';
+                        break;
+
+                    case 'b':
+                        b[i] = '\b';
+                        break;
+
+                    case 't':
+                        b[i] = '\t';
+                        break;
+
+                    default:
+                        a = 0;
+                        b[i] = peek();
+                }
+
+                read();
+
+            }else{
+                a = 0;
+                b[i] = read();
+            }
+
+            i++;
+
+            if(i >= b.length){
+                byte[] r = new byte[b.length+1024];
+                System.arraycopy(b, 0, r, 0, i);
+                b = r;
+            }
+        }
 
         read();
 
-        if(i < buf.length){
+        if(i < b.length){
             byte[] r = new byte[i];
-            System.arraycopy(buf, 0, r, 0, i);
+            System.arraycopy(b, 0, r, 0, i);
             return new JsonString(r);
         }
 
-        return new JsonString(buf);
+        return new JsonString(b);
     }
 
     private JsonNumber getNumber()throws IOException {

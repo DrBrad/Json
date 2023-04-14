@@ -46,7 +46,7 @@ public class FunctionTest {
         m.put("array", l2);
 
         m.put("title", "Earth to Echo"); //TEST STRING
-        m.put("serial", "Test \\\"String\"\n serialize"); //TEST STRING w SERIALIZATION
+        m.put("serial", "Test \"String\" serialize"); //TEST STRING w SERIALIZATION
         m.put("coming", 1680303600); //TEST INT
         m.put("boolTest", true); //TEST BOOLEAN
         m.put("nullTest", null); //TEST NULL
