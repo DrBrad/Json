@@ -24,48 +24,14 @@ public class JsonString implements JsonVariable {
 
     private void escape(){
         e = new ArrayList<>();
-        /*
-        int p = 0, a = 0;
-        for(int i = 0; i < b.length-1; i++){
-            if(b[i] == '\\'){
-                a++;
-            }else{
-                a = 0;
-            }
 
-            if(a%2 == 0 && b[i+1] == '"'){
-                i++;
-                e.add(i-p);
-                p = i+1;
-            }
-        }
-        */
-
-        int p = 0;//, a = 0;
+        int p = 0;
         for(int i = 0; i < b.length-1; i++){
             if(isEscapable(b[i])){
                 e.add(i-p);
                 p = i+1;
             }
-
-/*
-            if(b[i] == '\\'){
-                //a++;
-                i++;
-                e.add(i-p);
-                p = i+1;
-            //}else{
-            //    a = 0;
-            }
-/*
-            if(a%2 == 1){
-                i++;
-                e.add(i-p);
-                p = i+1;
-            }*/
         }
-
-        //System.out.println(e.size()+" - "+new String(b)+" - "+new String(sanitize()));
     }
 
     private boolean isEscapable(byte b){
@@ -115,7 +81,6 @@ public class JsonString implements JsonVariable {
                     r[p+x] = b[p-1];
             }
 
-            //r[p+x] = (byte) ((b[p-1] == '\n') ? 'n' : b[p-1]);//'"';
             x++;
         }
         System.arraycopy(b, p, r, p+x, b.length-p);

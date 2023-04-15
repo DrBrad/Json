@@ -89,125 +89,27 @@ public class Json {
                             field.set(i, null);
                             break;
                     }
-
-                    /*
-                    BYTES = 0
-                    NUMBER = 1
-                    ARRAY = 2
-                    OBJECT = 3
-                    BOOLEAN = 4
-                    NULL = 5
-                    */
-
-                    //System.err.println(v.);
-                    //if(v instanceof String){
-                        //System.err.println("STRING  "+v);
-                    //}
-                    /*
-                    if(String.class.isAssignableFrom(field.getType())){
-                        field.set(i, j.getString(k));
-
-                    }else if(field.getType().equals(int.class)){
-                        field.set(i, j.getInteger(k));
-
-                    }else if(field.getType().equals(long.class)){
-                        //}else if(Long.class.isAssignableFrom(method.getParameterTypes()[0])){
-                        field.set(i, j.getLong(k));
-
-                    }else if(field.getType().equals(double.class)){
-                        //}else if(Double.class.isAssignableFrom(method.getParameterTypes()[0])){
-                        field.set(i, j.getDouble(k));
-
-                    }else if(field.getType().equals(byte.class)){
-                        //}else if(Byte.class.isAssignableFrom(method.getParameterTypes()[0])){
-                        field.set(i, j.getBytes(k));
-
-                    }else if(field.getType().equals(boolean.class)){
-                        //}else if(Boolean.class.isAssignableFrom(method.getParameterTypes()[0])){
-                        field.set(i, j.getBoolean(k));
-
-                    }else if(List.class.isAssignableFrom(field.getType())){
-                        field.set(i, j.getJsonArray(k).getObject());
-
-                    }else{// if(Map.class.isAssignableFrom(field.getType())){
-
-                        //System.out.println(field.getType()+"  "+field.getGenericType().getClass());
-
-                        //ParameterizedType listType = (ParameterizedType) field.getType();
-                        //Class<?> cl = Class.forName(field.getType().getActualTypeArguments()[0].getTypeName());
-
-                        //Class<?> fieldType = field.getType();
-                        //System.out.println(field.getType().equals(Object.class)+"  "+Object.class.isAssignableFrom(field.getType()));
-
-                        //field.set(i, fromJson(field.getType(), j.getJsonObject(k)));
-                        //field.set(i, j.getJsonObject(k).getObject());
-                    }
-                    */
                 }
             }
         }
 
-        /*
+/*
         for(Method method : i.getClass().getDeclaredMethods()){
-            if(method.isAnnotationPresent(JsonAnnotation.class)){
-                if(method.getReturnType() == void.class){
-                    final String k = method.getAnnotation(JsonAnnotation.class).key();
+            if(method.isAnnotationPresent(JsonExpose.class) && method.getAnnotation(JsonExpose.class).deserialize()){
+                //if(method.getReturnType() == void.class){
+                //if(Map.class.isAssignableFrom(method.getParameterTypes()[0])){
+                //    method.invoke(i, j.getJsonObject(k));
 
-                    if(j.containsKey(k)){
-                        if(String.class.isAssignableFrom(method.getParameterTypes()[0])){
-                            method.invoke(i, j.getString(k));
-
-                        }else if(method.getParameterTypes()[0] == int.class){
-                            method.invoke(i, j.getInteger(k));
-
-                        }else if(method.getParameterTypes()[0] == long.class){
-                        //}else if(Long.class.isAssignableFrom(method.getParameterTypes()[0])){
-                            method.invoke(i, j.getLong(k));
-
-                        }else if(method.getParameterTypes()[0] == double.class){
-                        //}else if(Double.class.isAssignableFrom(method.getParameterTypes()[0])){
-                            method.invoke(i, j.getDouble(k));
-
-                        }else if(method.getParameterTypes()[0] == byte.class){
-                        //}else if(Byte.class.isAssignableFrom(method.getParameterTypes()[0])){
-                            method.invoke(i, j.getBytes(k));
-
-                        }else if(method.getParameterTypes()[0] == boolean.class){
-                        //}else if(Boolean.class.isAssignableFrom(method.getParameterTypes()[0])){
-                            method.invoke(i, j.getBoolean(k));
-
-                        }else if(List.class.isAssignableFrom(method.getParameterTypes()[0])){
-                            method.invoke(i, j.getJsonArray(k));
-
-                        }else if(Map.class.isAssignableFrom(method.getParameterTypes()[0])){
-                            method.invoke(i, j.getJsonObject(k));
-
-                        }
-                    }
-                }
+                //}
+                //}
             }
         }
-        */
-
+*/
         return i;
     }
 
     public static JsonObject toJson(Object o)throws IllegalAccessException {
         JsonObject j = new JsonObject();
-        /*
-        for(Method method : o.getClass().getDeclaredMethods()){
-            if(method.isAnnotationPresent(JsonAnnotation.class)){
-                try{
-                    if(method.getReturnType() != void.class){
-                        j.put(method.getAnnotation(JsonAnnotation.class).key(), method.invoke(o));
-                    }
-                }catch(ReflectiveOperationException e){
-                    e.printStackTrace();
-                }
-            }
-        }
-        */
-
         for(Field field : o.getClass().getDeclaredFields()){
             if(field.isAnnotationPresent(JsonExpose.class) && field.getAnnotation(JsonExpose.class).serialize()){
                 field.setAccessible(true);
@@ -433,18 +335,6 @@ public class Json {
     private JsonString getString(){
         pos++;
 
-        /*
-        int a = 0;
-        int s = pos;
-        while((a%2 == 1 && buf[pos] == '"') || buf[pos] != '"'){
-            if(buf[pos] == '\\'){
-                a++;
-            }else if(buf[pos] != '"'){
-                a = 0;
-            }
-            pos++;
-        }
-        */
         byte[] b = new byte[1024];
         int s = pos, a = 0;
         while(buf[pos] != '"' || (a%2 == 1 && buf[pos] == '"')){
