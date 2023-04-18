@@ -22,7 +22,7 @@ public class JsonToClassReader {
         this.in = in;
     }
 
-    public Object readToClass(Class<?> c)throws ReflectiveOperationException, IOException, ParseException {
+    public Object readToClass(Class<?> c)throws ReflectiveOperationException, IOException {
         read();
         return getObject(c);
     }
@@ -41,7 +41,7 @@ public class JsonToClassReader {
         return n;
     }
 
-    private Object get(Class<?> c)throws ReflectiveOperationException, IOException, ParseException {
+    private Object get(Class<?> c)throws ReflectiveOperationException, IOException {
         //IF CASE 0-9 = NUMBER
         //IF CASE T | F = BOOLEAN
         //IF CASE " = STRING
@@ -99,7 +99,7 @@ public class JsonToClassReader {
         return null;
     }
 
-    private Object getObject(Class<?> c)throws ReflectiveOperationException, IOException, ParseException {
+    private Object getObject(Class<?> c)throws ReflectiveOperationException, IOException {
         Constructor<?> constructor = c.getDeclaredConstructor();
         Object i = constructor.newInstance();
         while(peek() != '}'){
@@ -138,7 +138,7 @@ public class JsonToClassReader {
         return i;
     }
 
-    private List<Object> getArray(Class<?> c)throws ReflectiveOperationException, IOException, ParseException {
+    private List<Object> getArray(Class<?> c)throws ReflectiveOperationException, IOException {
         List<Object> l = new ArrayList<>();
         while(peek() != ']'){
             read();
@@ -223,6 +223,7 @@ public class JsonToClassReader {
 
         read();
 
+        /*
         if(i < b.length){
             byte[] r = new byte[i];
             System.arraycopy(b, 0, r, 0, i);
@@ -230,9 +231,11 @@ public class JsonToClassReader {
         }
 
         return new String(b);
+        */
+        return new String(b, 0, i);
     }
 
-    private Number getNumber()throws IOException, ParseException {
+    private Number getNumber()throws IOException {
         byte[] buf = new byte[23];
         int i = 0;
         while(isNumber(peek())){
@@ -240,13 +243,25 @@ public class JsonToClassReader {
             i++;
         }
 
+        /*
         if(i < buf.length){
             byte[] r = new byte[i];
             System.arraycopy(buf, 0, r, 0, i);
-            return NumberFormat.getInstance().parse(new String(r));
+            try{
+                return NumberFormat.getInstance().parse(new String(r));
+            }catch(ParseException e){
+                e.printStackTrace();
+            }
+        }
+        */
+
+        try{
+            return NumberFormat.getInstance().parse(new String(buf, 0, i));
+        }catch(ParseException e){
+            throw new IOException("Failed to parse json integer.");
         }
 
-        return NumberFormat.getInstance().parse(new String(buf));
+        //return NumberFormat.getInstance().parse(new String(buf));
     }
 
     private boolean isNumber(byte b){

@@ -213,6 +213,7 @@ public class JsonReader {
             i++;
         }
 
+        /*
         if(i < buf.length){
             byte[] r = new byte[i];
             System.arraycopy(buf, 0, r, 0, i);
@@ -220,6 +221,8 @@ public class JsonReader {
         }
 
         return new JsonNumber(new String(buf));
+        */
+        return new JsonNumber(new String(buf, 0, i));
     }
 
     private boolean isNumber(byte b){
