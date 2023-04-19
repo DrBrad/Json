@@ -6,9 +6,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -102,10 +104,26 @@ public class JsonToClassReader {
     private Object getObject(Class<?> c)throws ReflectiveOperationException, IOException {
         Constructor<?> constructor = c.getDeclaredConstructor();
         Object i = constructor.newInstance();
+
+        /*
+        Map<String, Method> m = new HashMap<>();
+        for(Method method : i.getClass().getDeclaredMethods()){
+            if(method.isAnnotationPresent(JsonExpose.class) && method.getAnnotation(JsonExpose.class).deserialize()){ //MODIFY THIS...
+                k.put(method.getAnnotation(JsonExpose.class).key(), method);
+            }
+        }
+        */
+
         while(peek() != '}'){
             read();
             String k = getString();
             read();
+
+            /*
+            if(m.contains(k)){
+                m.get(k).invoke(i, get(c));
+            }
+            */
 
             try{
                 Field field = c.getDeclaredField(k);
