@@ -4,6 +4,8 @@ import unet.json.variables.*;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +37,75 @@ public class Json {
         Constructor<?> constructor = c.getDeclaredConstructor();
         Object i = constructor.newInstance();
 
+
+        //UNSURE IF ITS MORE OPTIMAL TO GO BY FIELDS/METHODS | BY | JSON...
+
+        Map<String, Method> m = new HashMap<>();
+        for(Method method : i.getClass().getDeclaredMethods()){
+            if(!method.isAnnotationPresent(JsonExposeMethod.class) || method.getAnnotation(JsonExposeMethod.class).key() == null){ //MODIFY THIS...
+                continue;
+            }
+            if(method.getParameterCount() != 1){
+                continue;
+            }
+
+            m.put(method.getAnnotation(JsonExposeMethod.class).key(), method);
+        }
+
+        Map<String, Field> f = new HashMap<>();
+        for(Field field : i.getClass().getDeclaredFields()){
+            if(field.isAnnotationPresent(JsonExpose.class) && field.getAnnotation(JsonExpose.class).deserialize()){
+                f.put(field.getName(), field);
+            }
+        }
+
+        for(JsonString s : j.keySet()){
+            String k = s.getObject();
+
+            //METHOD CHECK
+            if(m.containsKey(k)){
+                Method method = m.get(k);
+                method.setAccessible(true);
+
+                //IF LIST | OBJECT = NULL WHAT THEN... - MAKE SURE WE EMPTY CHECK OBJECTS AS WELL...
+
+                if(method.getParameterTypes()[0].isPrimitive() ||
+                        method.getParameterTypes()[0].equals(Object.class) ||
+                        String.class.isAssignableFrom(method.getParameterTypes()[0]) ||
+                        List.class.isAssignableFrom(method.getParameterTypes()[0]) ||
+                        Map.class.isAssignableFrom(method.getParameterTypes()[0])){
+
+                    method.invoke(i, j.get(k));
+                    continue;
+
+                }else{
+                    method.invoke(i, fromJson(method.getParameterTypes()[0], j.getJsonObject(k)));
+                    continue;
+                }
+            }
+
+            //FIELD CHECK
+            if(f.containsKey(k)){
+                Field field = f.get(k);
+                field.setAccessible(true);
+
+                //IF LIST | OBJECT = NULL WHAT THEN...
+
+                if(field.getType().isPrimitive() ||
+                        field.getType().equals(Object.class) ||
+                        String.class.isAssignableFrom(field.getType()) ||
+                        List.class.isAssignableFrom(field.getType()) ||
+                        Map.class.isAssignableFrom(field.getType())){
+
+                    field.set(i, j.get(k));
+
+                }else{
+                    field.set(i, fromJson(field.getType(), j.getJsonObject(k)));
+                }
+            }
+        }
+
+        /*
         for(Field field : c.getDeclaredFields()){
             if(field.isAnnotationPresent(JsonExpose.class) && field.getAnnotation(JsonExpose.class).deserialize()){
                 final String k = field.getName();
@@ -115,8 +186,10 @@ public class Json {
             if(field.isAnnotationPresent(JsonExpose.class) && field.getAnnotation(JsonExpose.class).serialize()){
                 field.setAccessible(true);
 
+                //IF NULL - IS LIST | MAP - EMPTY MAP OR ARRAY...
+
                 if(field.getType().isPrimitive() ||
-                        field.getType() == Object.class ||
+                        field.getType().equals(Object.class) ||
                         String.class.isAssignableFrom(field.getType()) ||
                         List.class.isAssignableFrom(field.getType()) ||
                         Map.class.isAssignableFrom(field.getType())){
@@ -212,12 +285,15 @@ public class Json {
     private void put(JsonArray l){
         buf[pos] = '[';
         pos++;
-        for(int i = 0; i < l.size()-1; i++){
-            put(l.valueOf(i));
-            buf[pos] = ',';
-            pos++;
+
+        if(l.size() > 0){
+            for(int i = 0; i < l.size()-1; i++){
+                put(l.valueOf(i));
+                buf[pos] = ',';
+                pos++;
+            }
+            put(l.valueOf(l.size()-1));
         }
-        put(l.valueOf(l.size()-1));
         buf[pos] = ']';
         pos++;
     }
@@ -226,17 +302,19 @@ public class Json {
         buf[pos] = '{';
         pos++;
 
-        int i = 0;
-        for(JsonString k : m.keySet()){
-            put(k);
-            buf[pos] = ':';
-            pos++;
-            put(m.valueOf(k));
-
-            i++;
-            if(i < m.size()){
-                buf[pos] = ',';
+        if(m.size() > 0){
+            int i = 0;
+            for(JsonString k : m.keySet()){
+                put(k);
+                buf[pos] = ':';
                 pos++;
+                put(m.valueOf(k));
+
+                i++;
+                if(i < m.size()){
+                    buf[pos] = ',';
+                    pos++;
+                }
             }
         }
         buf[pos] = '}';

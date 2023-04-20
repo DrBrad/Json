@@ -110,7 +110,7 @@ public class JsonToClassReader {
             if(!method.isAnnotationPresent(JsonExposeMethod.class) || method.getAnnotation(JsonExposeMethod.class).key() == null){ //MODIFY THIS...
                 continue;
             }
-            if(method.getParameterCount() != 1){
+            if(method.getParameterCount() != 1){ // getParameterTypes().length if to old...
                 continue;
             }
 
@@ -119,11 +119,9 @@ public class JsonToClassReader {
 
         Map<String, Field> f = new HashMap<>();
         for(Field field : i.getClass().getDeclaredFields()){
-            if(!field.isAnnotationPresent(JsonExpose.class) || field.getAnnotation(JsonExpose.class).deserialize()){ //MODIFY THIS...
-                continue;
+            if(field.isAnnotationPresent(JsonExpose.class) && field.getAnnotation(JsonExpose.class).deserialize()){
+                f.put(field.getName(), field);
             }
-
-            f.put(field.getName(), field);
         }
 
         while(peek() != '}'){
@@ -137,7 +135,7 @@ public class JsonToClassReader {
                 method.setAccessible(true);
 
                 if(method.getParameterTypes()[0].isPrimitive() ||
-                        method.getParameterTypes()[0] == Object.class ||
+                        method.getParameterTypes()[0].equals(Object.class) ||
                         String.class.isAssignableFrom(method.getParameterTypes()[0]) ||
                         List.class.isAssignableFrom(method.getParameterTypes()[0]) ||
                         Map.class.isAssignableFrom(method.getParameterTypes()[0])){
@@ -157,7 +155,7 @@ public class JsonToClassReader {
                 field.setAccessible(true);
 
                 if(field.getType().isPrimitive() ||
-                        field.getType() == Object.class ||
+                        field.getType().equals(Object.class) ||
                         String.class.isAssignableFrom(field.getType()) ||
                         List.class.isAssignableFrom(field.getType()) ||
                         Map.class.isAssignableFrom(field.getType())){

@@ -15,26 +15,31 @@ public class JsonWriter {
 
     public void write(JsonArray l)throws IOException {
         out.write('[');
-        for(int i = 0; i < l.size()-1; i++){
-            write(l.valueOf(i));
-            out.write(',');
+
+        if(l.size() > 0){
+            for(int i = 0; i < l.size()-1; i++){
+                write(l.valueOf(i));
+                out.write(',');
+            }
+            write(l.valueOf(l.size()-1));
         }
-        write(l.valueOf(l.size()-1));
         out.write(']');
     }
 
     public void write(JsonObject m)throws IOException {
         out.write('{');
 
-        int i = 0;
-        for(JsonString k : m.keySet()){
-            write(k);
-            out.write(':');
-            write(m.valueOf(k));
+        if(m.size() > 0){
+            int i = 0;
+            for(JsonString k : m.keySet()){
+                write(k);
+                out.write(':');
+                write(m.valueOf(k));
 
-            i++;
-            if(i < m.size()){
-                out.write(',');
+                i++;
+                if(i < m.size()){
+                    out.write(',');
+                }
             }
         }
         out.write('}');

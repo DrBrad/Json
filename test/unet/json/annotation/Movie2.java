@@ -3,6 +3,9 @@ package unet.json.annotation;
 import unet.json.variables.JsonExpose;
 import unet.json.variables.JsonExposeMethod;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Movie2 {
 
     @JsonExpose
@@ -17,9 +20,12 @@ public class Movie2 {
     @JsonExpose
     private Object nullTest;
 
-    //@JsonExpose
+    @JsonExpose(deserialize = false)
     private MongoID id;
     //private Map<String, String> id = new HashMap<>();
+
+    @JsonExpose
+    private List<String> suggested = new ArrayList<>();
 
     //public Map<String, String> getId(){
 
@@ -76,6 +82,11 @@ public class Movie2 {
         return nullTest;
     }
 */
+    public List<String> getSuggested(){
+        return suggested;
+    }
+
+
     public static class MongoID {
 
         @JsonExpose

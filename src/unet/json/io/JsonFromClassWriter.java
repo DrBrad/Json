@@ -69,11 +69,13 @@ public class JsonFromClassWriter {
 
     private void write(List<?> l)throws ReflectiveOperationException, IOException {
         out.write('[');
-        for(int i = 0; i < l.size()-1; i++){
-            write(l.get(i));
-            out.write(',');
+        if(!l.isEmpty()){
+            for(int i = 0; i < l.size()-1; i++){
+                write(l.get(i));
+                out.write(',');
+            }
+            write(l.get(l.size()-1));
         }
-        write(l.get(l.size()-1));
         out.write(']');
     }
 
