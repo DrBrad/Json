@@ -117,11 +117,21 @@ public class JsonToClassReader {
             m.put(method.getAnnotation(JsonExposeMethod.class).key(), method);
         }
 
+        Map<String, Field> f = new HashMap<>();
+        for(Field field : i.getClass().getDeclaredFields()){
+            if(!field.isAnnotationPresent(JsonExpose.class) || field.getAnnotation(JsonExpose.class).deserialize()){ //MODIFY THIS...
+                continue;
+            }
+
+            f.put(field.getName(), field);
+        }
+
         while(peek() != '}'){
             read();
             String k = getString();
             read();
 
+            //METHOD CHECK
             if(m.containsKey(k)){
                 Method method = m.get(k);
                 method.setAccessible(true);
@@ -141,6 +151,26 @@ public class JsonToClassReader {
                 }
             }
 
+            //FIELD CHECK
+            if(f.containsKey(k)){
+                Field field = f.get(k);
+                field.setAccessible(true);
+
+                if(field.getType().isPrimitive() ||
+                        field.getType() == Object.class ||
+                        String.class.isAssignableFrom(field.getType()) ||
+                        List.class.isAssignableFrom(field.getType()) ||
+                        Map.class.isAssignableFrom(field.getType())){
+
+                    field.set(i, get(c));
+                    continue;
+
+                }else{
+                    field.set(i, get(field.getType()));
+                    continue;
+                }
+            }
+            /*
             try{
                 Field field = c.getDeclaredField(k);
 
@@ -163,6 +193,7 @@ public class JsonToClassReader {
                 }
             }catch(NoSuchFieldError e){
             }
+            */
 
             get(c);
         }
