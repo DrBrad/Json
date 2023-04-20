@@ -1,6 +1,7 @@
 package unet.json.annotation;
 
 import unet.json.variables.JsonExpose;
+import unet.json.variables.JsonExposeMethod;
 
 public class Movie2 {
 
@@ -16,13 +17,19 @@ public class Movie2 {
     @JsonExpose
     private Object nullTest;
 
-    @JsonExpose
+    //@JsonExpose
     private MongoID id;
     //private Map<String, String> id = new HashMap<>();
 
     //public Map<String, String> getId(){
+
     public MongoID getId(){
         return id;
+    }
+
+    @JsonExposeMethod(key = "id")
+    public void setId(MongoID id){
+        this.id = id;
     }
 
     public String getTitle(){

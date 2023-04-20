@@ -39,7 +39,6 @@ public class AnnotationTest {
             System.out.println("MAP: "+z+" = "+m.getId().get(z));
         }
         */
-
         System.out.println("SERIALIZE TEST");
         //System.out.println(m.getId().get("$oid"));//.getId());
         System.out.println(m.getId().getId());
@@ -61,7 +60,6 @@ public class AnnotationTest {
         System.out.println("DESERIALIZE TEST");
         json = Json.toJson(m);
         System.out.println(json);
-
 
 
 

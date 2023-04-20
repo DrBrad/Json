@@ -90,7 +90,7 @@ public class JsonToClassReader {
                 return getObject(c);
 
             case '[':
-                //return getArray();
+                return getArray(c);
 
             default:
                 if(isNumber(peek())){
@@ -105,25 +105,41 @@ public class JsonToClassReader {
         Constructor<?> constructor = c.getDeclaredConstructor();
         Object i = constructor.newInstance();
 
-        /*
         Map<String, Method> m = new HashMap<>();
         for(Method method : i.getClass().getDeclaredMethods()){
-            if(method.isAnnotationPresent(JsonExpose.class) && method.getAnnotation(JsonExpose.class).deserialize()){ //MODIFY THIS...
-                k.put(method.getAnnotation(JsonExpose.class).key(), method);
+            if(!method.isAnnotationPresent(JsonExposeMethod.class) || method.getAnnotation(JsonExposeMethod.class).key() == null){ //MODIFY THIS...
+                continue;
             }
+            if(method.getParameterCount() != 1){
+                continue;
+            }
+
+            m.put(method.getAnnotation(JsonExposeMethod.class).key(), method);
         }
-        */
 
         while(peek() != '}'){
             read();
             String k = getString();
             read();
 
-            /*
-            if(m.contains(k)){
-                m.get(k).invoke(i, get(c));
+            if(m.containsKey(k)){
+                Method method = m.get(k);
+                method.setAccessible(true);
+
+                if(method.getParameterTypes()[0].isPrimitive() ||
+                        method.getParameterTypes()[0] == Object.class ||
+                        String.class.isAssignableFrom(method.getParameterTypes()[0]) ||
+                        List.class.isAssignableFrom(method.getParameterTypes()[0]) ||
+                        Map.class.isAssignableFrom(method.getParameterTypes()[0])){
+
+                    method.invoke(i, get(c));
+                    continue;
+
+                }else{
+                    method.invoke(i, get(method.getParameterTypes()[0]));
+                    continue;
+                }
             }
-            */
 
             try{
                 Field field = c.getDeclaredField(k);
