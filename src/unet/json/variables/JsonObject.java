@@ -6,7 +6,7 @@ import java.util.*;
 
 public class JsonObject  implements JsonVariable, JsonObserver {
 
-    private Map<JsonString, JsonVariable> m = new HashMap<>();
+    private Map<JsonString, JsonVariable> m = new LinkedHashMap<>();
     private JsonObserver o;
     private int s = 2;
 
@@ -244,7 +244,7 @@ public class JsonObject  implements JsonVariable, JsonObserver {
 
     @Override
     public Map<String, ?> getObject(){
-        Map<String, Object> h = new HashMap<>();
+        Map<String, Object> h = new LinkedHashMap<>();
         for(JsonString k : m.keySet()){
             h.put(new String(k.getObject()), m.get(k).getObject());
         }

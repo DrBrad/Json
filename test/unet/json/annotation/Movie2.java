@@ -34,8 +34,9 @@ public class Movie2 {
     }
 
     @JsonExposeMethod(key = "id")
-    public void setId(MongoID id){
-        this.id = id;
+    public MongoID getMongoId(){
+        id = new MongoID();
+        return id;
     }
 
     public String getTitle(){

@@ -103,16 +103,21 @@ public class JsonToClassReader {
 
     private Object getObject(Class<?> c)throws ReflectiveOperationException, IOException {
         Constructor<?> constructor = c.getDeclaredConstructor();
-        Object i = constructor.newInstance();
+        return getObject(constructor.newInstance());
+    }
 
+    private Object getObject(Object i)throws ReflectiveOperationException, IOException {
         Map<String, Method> m = new HashMap<>();
         for(Method method : i.getClass().getDeclaredMethods()){
             if(!method.isAnnotationPresent(JsonExposeMethod.class) || method.getAnnotation(JsonExposeMethod.class).key() == null){ //MODIFY THIS...
                 continue;
             }
-            if(method.getParameterCount() != 1){ // getParameterTypes().length if to old...
-                continue;
-            }
+            //if(!method.getReturnType().equals(void.class)){
+            //    continue;
+            //}
+            //if(method.getParameterCount() != 1){ // getParameterTypes().length if to old...
+            //    continue;
+            //}
 
             m.put(method.getAnnotation(JsonExposeMethod.class).key(), method);
         }
@@ -134,19 +139,24 @@ public class JsonToClassReader {
                 Method method = m.get(k);
                 method.setAccessible(true);
 
+                getObject(method.invoke(i, null));
+                continue;
+                /*
                 if(method.getParameterTypes()[0].isPrimitive() ||
                         method.getParameterTypes()[0].equals(Object.class) ||
                         String.class.isAssignableFrom(method.getParameterTypes()[0]) ||
                         List.class.isAssignableFrom(method.getParameterTypes()[0]) ||
                         Map.class.isAssignableFrom(method.getParameterTypes()[0])){
 
-                    method.invoke(i, get(c));
+                    method.invoke(i, get(i.getClass()));
                     continue;
 
                 }else{
-                    method.invoke(i, get(method.getParameterTypes()[0]));
+                    //method.invoke(i, get(method.getParameterTypes()[0]));
+                    getObject(method.invoke(i, null));
                     continue;
                 }
+                */
             }
 
             //FIELD CHECK
@@ -160,7 +170,7 @@ public class JsonToClassReader {
                         List.class.isAssignableFrom(field.getType()) ||
                         Map.class.isAssignableFrom(field.getType())){
 
-                    field.set(i, get(c));
+                    field.set(i, get(i.getClass()));
                     continue;
 
                 }else{
@@ -193,7 +203,7 @@ public class JsonToClassReader {
             }
             */
 
-            get(c);
+            get(i.getClass());
         }
 
         read();

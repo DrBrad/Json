@@ -35,7 +35,12 @@ public class Json {
 
     public static Object fromJson(Class<?> c, JsonObject j)throws ReflectiveOperationException {
         Constructor<?> constructor = c.getDeclaredConstructor();
-        Object i = constructor.newInstance();
+        return fromJson(constructor.newInstance(), j);
+    }
+
+    public static Object fromJson(Object i, JsonObject j)throws ReflectiveOperationException {
+        //Constructor<?> constructor = c.getDeclaredConstructor();
+        //Object i = constructor.newInstance();
 
 
         //UNSURE IF ITS MORE OPTIMAL TO GO BY FIELDS/METHODS | BY | JSON...
@@ -45,9 +50,14 @@ public class Json {
             if(!method.isAnnotationPresent(JsonExposeMethod.class) || method.getAnnotation(JsonExposeMethod.class).key() == null){ //MODIFY THIS...
                 continue;
             }
+            //if(!method.getReturnType().equals(void.class)){
+            //    continue;
+            //}
+            /*
             if(method.getParameterCount() != 1){
                 continue;
             }
+            */
 
             m.put(method.getAnnotation(JsonExposeMethod.class).key(), method);
         }
@@ -67,8 +77,12 @@ public class Json {
                 Method method = m.get(k);
                 method.setAccessible(true);
 
+                fromJson(method.invoke(i, null), j.getJsonObject(k));
+                continue;
+
                 //IF LIST | OBJECT = NULL WHAT THEN... - MAKE SURE WE EMPTY CHECK OBJECTS AS WELL...
 
+                /*
                 if(method.getParameterTypes()[0].isPrimitive() ||
                         method.getParameterTypes()[0].equals(Object.class) ||
                         String.class.isAssignableFrom(method.getParameterTypes()[0]) ||
@@ -79,9 +93,11 @@ public class Json {
                     continue;
 
                 }else{
-                    method.invoke(i, fromJson(method.getParameterTypes()[0], j.getJsonObject(k)));
+                    //method.invoke(i, fromJson(method.getParameterTypes()[0], j.getJsonObject(k)));
+                    fromJson(method.invoke(i, null), j.getJsonObject(k));
                     continue;
                 }
+                */
             }
 
             //FIELD CHECK
