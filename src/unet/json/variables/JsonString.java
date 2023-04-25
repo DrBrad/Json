@@ -26,7 +26,7 @@ public class JsonString implements JsonVariable {
         e = new ArrayList<>();
 
         int p = 0;
-        for(int i = 0; i < b.length-1; i++){
+        for(int i = 0; i < b.length; i++){
             if(isEscapable(b[i])){
                 e.add(i-p);
                 p = i+1;

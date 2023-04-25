@@ -432,6 +432,7 @@ public class Json {
 
         byte[] b = new byte[1024];
         int s = pos, a = 0;
+        //while(buf[pos] != '"'){
         while(buf[pos] != '"' || (a%2 == 1 && buf[pos] == '"')){
             if(buf[pos] == '\\'){
                 s++;
@@ -465,14 +466,16 @@ public class Json {
                     default:
                         a = 0;
                         b[pos-s] = buf[pos];
+                        pos++; //
                 }
 
             }else{
                 a = 0;
                 b[pos-s] = buf[pos];
+                pos++; //
             }
 
-            pos++;
+            //pos++;
 
             if(pos-s >= buf.length){
                 byte[] r = new byte[buf.length+1024];

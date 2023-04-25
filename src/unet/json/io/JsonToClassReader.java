@@ -240,7 +240,6 @@ public class JsonToClassReader {
             }
         }
         */
-
         byte[] b = new byte[1024];
         int i = 0, a = 0;
         while(peek() != '"' || (a%2 == 1 && peek() == '"')){
@@ -276,16 +275,15 @@ public class JsonToClassReader {
                     default:
                         a = 0;
                         b[i] = peek();
+                        read();
+                        i++;
                 }
-
-                read();
 
             }else{
                 a = 0;
                 b[i] = read();
+                i++;
             }
-
-            i++;
 
             if(i >= b.length){
                 byte[] r = new byte[b.length+1024];

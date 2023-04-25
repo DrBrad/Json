@@ -176,16 +176,15 @@ public class JsonReader {
                     default:
                         a = 0;
                         b[i] = peek();
+                        read();
+                        i++;
                 }
-
-                read();
 
             }else{
                 a = 0;
                 b[i] = read();
+                i++;
             }
-
-            i++;
 
             if(i >= b.length){
                 byte[] r = new byte[b.length+1024];
