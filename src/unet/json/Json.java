@@ -360,8 +360,6 @@ public class Json {
         //IF CASE n = NULL
         //trim();
 
-        //System.out.println((char)(buf[pos]));
-
         switch(buf[pos]){
             case '"':
                 return getString();
@@ -406,7 +404,7 @@ public class Json {
     }
 
     private JsonBoolean getBoolean(boolean bool){
-        pos += (bool) ? 5 : 6;
+        pos += (bool) ? 4 : 5;
         trim();
 
         return new JsonBoolean(bool);
