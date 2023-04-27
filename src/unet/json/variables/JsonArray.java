@@ -296,10 +296,9 @@ public class JsonArray implements JsonVariable, JsonObserver {
         return l.size();
     }
 
-
-
-
-
+    public List<JsonVariable> toList(){
+        return l;
+    }
 
     protected void setObserver(JsonObserver observer){
         o = observer;
