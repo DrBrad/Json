@@ -243,7 +243,7 @@ public class Json {
         this.buf = buf;
         pos = off;
 
-        //trim();
+        trim();
 
         if(buf[pos] == '{'){
             pos++;
@@ -419,7 +419,7 @@ public class Json {
         byte[] b = new byte[pos-s];
         System.arraycopy(buf, s, b, 0, b.length);
 
-        pos++;
+        //pos++;
         trim();
 
         return new JsonNumber(new String(b));
@@ -503,7 +503,7 @@ public class Json {
 
 
     private JsonArray getArray(){
-        trim();
+        //trim();
 
         if(buf[pos] == '['){
             JsonArray j = new JsonArray();
@@ -521,7 +521,7 @@ public class Json {
     }
 
     private JsonObject getObject(){
-        trim();
+        //trim();
 
         if(buf[pos] == '{'){
             JsonObject j = new JsonObject();
