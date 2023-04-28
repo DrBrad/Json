@@ -223,6 +223,9 @@ public class Json {
 
 
     public void decodeArray(JsonArray j, byte[] buf, int off){
+        if(buf == null){
+            return;
+        }
         this.buf = buf;
         pos = off;
 
@@ -240,6 +243,9 @@ public class Json {
     }
 
     public void decodeObject(JsonObject j, byte[] buf, int off){
+        if(buf == null){
+            return;
+        }
         this.buf = buf;
         pos = off;
 
