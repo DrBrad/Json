@@ -127,43 +127,83 @@ public class JsonObject  implements JsonVariable, JsonObserver {
     }
 
     public Object get(String k){
-        return m.get(new JsonString(k)).getObject();
+        JsonString c = new JsonString(k);
+        if(m.containsKey(c)){
+            return m.get(c).getObject();
+        }
+        return null;
     }
 
     public Integer getInteger(String k){
-        return ((Number) m.get(new JsonString(k)).getObject()).intValue();
+        JsonString c = new JsonString(k);
+        if(m.containsKey(c)){
+            return ((Number) m.get(c).getObject()).intValue();
+        }
+        return null;
     }
 
     public Long getLong(String k){
-        return ((Number) m.get(new JsonString(k)).getObject()).longValue();
+        JsonString c = new JsonString(k);
+        if(m.containsKey(c)){
+            return ((Number) m.get(c).getObject()).longValue();
+        }
+        return null;
     }
 
     public Short getShort(String k){
-        return ((Number) m.get(new JsonString(k)).getObject()).shortValue();
+        JsonString c = new JsonString(k);
+        if(m.containsKey(c)){
+            return ((Number) m.get(c).getObject()).shortValue();
+        }
+        return null;
     }
 
     public Double getDouble(String k){
-        return ((Number) m.get(new JsonString(k)).getObject()).doubleValue();
+        JsonString c = new JsonString(k);
+        if(m.containsKey(c)){
+            return ((Number) m.get(c).getObject()).doubleValue();
+        }
+        return null;
     }
 
     public Float getFloat(String k){
-        return ((Number) m.get(new JsonString(k)).getObject()).floatValue();
+        JsonString c = new JsonString(k);
+        if(m.containsKey(c)){
+            return ((Number) m.get(c).getObject()).floatValue();
+        }
+        return null;
     }
 
     public Boolean getBoolean(String k){
-        return ((Boolean) m.get(new JsonString(k)).getObject()).booleanValue();
+        JsonString c = new JsonString(k);
+        if(m.containsKey(c)){
+            return ((Boolean) m.get(c).getObject()).booleanValue();
+        }
+        return null;
     }
 
     public String getString(String k){
-        return (String) m.get(new JsonString(k)).getObject();
+        JsonString c = new JsonString(k);
+        if(m.containsKey(c)){
+            return (String) m.get(c).getObject();
+        }
+        return null;
     }
 
     public JsonArray getJsonArray(String k){
-        return (JsonArray) m.get(new JsonString(k));
+        JsonString c = new JsonString(k);
+        if(m.containsKey(c)){
+            return (JsonArray) m.get(c);
+        }
+        return null;
     }
 
     public JsonObject getJsonObject(String k){
-        return (JsonObject) m.get(new JsonString(k));
+        JsonString c = new JsonString(k);
+        if(m.containsKey(c)){
+            return (JsonObject) m.get(c);
+        }
+        return null;
     }
 
     public boolean containsKey(String k){
@@ -269,22 +309,22 @@ public class JsonObject  implements JsonVariable, JsonObserver {
             String k = new String(o.getObject());
 
             if(m.get(o) instanceof JsonNumber){
-                b.append("\t\033[0;31m"+k+"\033[0m:\033[0;33m"+((JsonNumber) m.get(o)).getObject()+"\033[0m\r\n");
+                b.append("\t"+k+":"+((JsonNumber) m.get(o)).getObject()+"\r\n");
 
             }else if(m.get(o) instanceof JsonBoolean){
-                b.append("\t\033[0;31m"+k+"\033[0m:\033[0;35m"+((JsonBoolean) m.get(o)).getObject()+"\033[0m\r\n");
+                b.append("\t"+k+":"+((JsonBoolean) m.get(o)).getObject()+"\r\n");
 
             }else if(m.get(o) instanceof JsonNull){
-                b.append("\t\033[0;31m"+k+"\033[0m:\033[0;36m"+m.get(o).getObject()+"\033[0m\r\n");
+                b.append("\t"+k+":"+m.get(o).getObject()+"\r\n");
 
             }else if(m.get(o) instanceof JsonString){
-                b.append("\t\033[0;31m"+k+"\033[0m:\033[0;34m"+m.get(o).getObject()+"\033[0m\r\n");
+                b.append("\t"+k+":"+m.get(o).getObject()+"\r\n");
 
             }else if(m.get(o) instanceof JsonArray){
-                b.append("\t\033[0;32m"+k+"\033[0m:"+m.get(o).toString().replaceAll("\\r?\\n", "\r\n\t")+"\r\n");
+                b.append("\t"+k+":"+m.get(o).toString().replaceAll("\\r?\\n", "\r\n\t")+"\r\n");
 
             }else if(m.get(o) instanceof JsonObject){
-                b.append("\t\033[0;32m"+k+"\033[0m:"+m.get(o).toString().replaceAll("\\r?\\n", "\r\n\t")+"\r\n");
+                b.append("\t"+k+":"+m.get(o).toString().replaceAll("\\r?\\n", "\r\n\t")+"\r\n");
             }
         }
 
