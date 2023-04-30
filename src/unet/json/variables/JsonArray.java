@@ -1,6 +1,6 @@
-package unet.json.variables;
+package tv.flixbox.libs.json.variables;
 
-import unet.json.Json;
+import tv.flixbox.libs.json.Json;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -185,6 +185,30 @@ public class JsonArray implements JsonVariable, JsonObserver {
         }
     }
 
+    public void append(JsonArray a){
+        l.addAll(a.toList());
+    }
+
+    public void append(List<?> l){
+        for(Object v : l){
+            if(v == null){
+                add(new JsonNull());
+            }else if(v instanceof JsonVariable){
+                add((JsonVariable) v);
+            }else if(v instanceof Number){
+                add(new JsonNumber(v.toString()));
+            }else if(v instanceof Boolean){
+                add(new JsonBoolean((Boolean) v));
+            }else if(v instanceof String){
+                add(new JsonString((String) v));
+            }else if(v instanceof List<?>){
+                add(new JsonArray((List<?>) v));
+            }else if(v instanceof Map<?, ?>){
+                add(new JsonObject((Map<?, ?>) v));
+            }
+        }
+    }
+
     public JsonVariable valueOf(int i){
         return l.get(i);
     }
@@ -344,22 +368,22 @@ public class JsonArray implements JsonVariable, JsonObserver {
 
         for(JsonVariable v : l){
             if(v instanceof JsonNumber){
-                b.append("\t\033[0;31m"+v.getObject()+"\033[0m\r\n");
+                b.append("\t"+v.getObject()+"\r\n");
 
             }else if(v instanceof JsonBoolean){
-                b.append("\t\033[0;35m"+v.getObject()+"\033[0m\r\n");
+                b.append("\t"+v.getObject()+"\r\n");
 
             }else if(v instanceof JsonNull){
-                b.append("\t\033[0;36m"+v.getObject()+"\033[0m\r\n");
+                b.append("\t"+v.getObject()+"\r\n");
 
             }else if(v instanceof JsonString){
-                b.append("\t\033[0;34m"+v.getObject()+"\033[0m\r\n");
+                b.append("\t"+v.getObject()+"\r\n");
 
             }else if(v instanceof JsonArray){
-                b.append("\t\033[0m"+v.toString().replaceAll("\\r?\\n", "\r\n\t")+"\r\n");
+                b.append("\t"+v.toString().replaceAll("\\r?\\n", "\r\n\t")+"\r\n");
 
             }else if(v instanceof JsonObject){
-                b.append("\t\033[0m"+v.toString().replaceAll("\\r?\\n", "\r\n\t")+"\r\n");
+                b.append("\t"+v.toString().replaceAll("\\r?\\n", "\r\n\t")+"\r\n");
             }
         }
 
