@@ -1,6 +1,6 @@
-package tv.flixbox.libs.json.variables;
+package unet.json.variables;
 
-import tv.flixbox.libs.json.Json;
+import unet.json.Json;
 
 import java.util.ArrayList;
 import java.util.List;
