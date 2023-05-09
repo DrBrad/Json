@@ -481,15 +481,15 @@ public class Json {
 
             //pos++;
 
-            if(pos-s >= buf.length){
-                byte[] r = new byte[buf.length+1024];
+            if(pos-s >= b.length){
+                byte[] r = new byte[b.length+1024];
                 System.arraycopy(b, 0, r, 0, pos-s);
                 b = r;
             }
         }
 
         //pos += i;
-        if(pos-s < buf.length){
+        if(pos-s < b.length){
             byte[] r = new byte[pos-s];
             System.arraycopy(b, 0, r, 0, pos-s);
             pos++;
