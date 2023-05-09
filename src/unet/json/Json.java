@@ -404,7 +404,7 @@ public class Json {
     }
 
     private JsonNull getNull(){
-        pos += 5;
+        pos += 4;
         trim();
         return new JsonNull();
     }
