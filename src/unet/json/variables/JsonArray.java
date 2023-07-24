@@ -105,20 +105,11 @@ public class JsonReader {
         //Map<JsonString, JsonVariable> m = new HashMap<>();
         while(peek() != '}'){
             trim();
-
-            JsonString k = getString();
-            System.out.println(k.getObject());
-            //read();
-
-            JsonVariable v = get();
-
-            System.out.println(v.getObject());
-            j.put(k, v);//get());
+            j.put(getString(), get());
         }
 
-        System.out.println("BREAK");
-
         read();
+        trim();
 
         return j;
     }
@@ -140,6 +131,7 @@ public class JsonReader {
         }
 
         read();
+        trim();
 
         return j;
     }
